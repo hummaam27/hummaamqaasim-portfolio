@@ -1,65 +1,114 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Container } from "@/components/layout/container";
+import { SectionLabel } from "@/components/section-label";
+import { ProjectCard } from "@/components/project-card";
+import { PostRow } from "@/components/post-row";
+import { getAllProjects, getAllPosts } from "@/lib/content";
+import { siteConfig } from "@/site-config";
 
-export default function Home() {
+export default async function Home() {
+  const [projects, posts] = await Promise.all([
+    getAllProjects(),
+    getAllPosts(),
+  ]);
+
+  const featured = projects.filter((p) => p.featured);
+  const grid = featured.slice(0, 2);
+  const feature = featured[2];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      {/* Hero */}
+      <section className="pt-20 pb-4 sm:pt-28">
+        <Container width="standard">
+          <p className="eyebrow">
+            Data Engineer · {siteConfig.author.location.split(",")[0]}, MD
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          <h1 className="mt-5 font-serif text-[36px] leading-[1.02] tracking-tight text-(--color-ink) sm:text-[46px]">
+            {siteConfig.author.name}
+          </h1>
+          <p className="mt-6 max-w-2xl font-serif text-[17px] leading-[1.55] text-(--color-ink)">
+            {siteConfig.author.bio}
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href={siteConfig.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 items-center rounded-md bg-(--color-ink) px-4 text-[13px] font-medium text-(--color-paper) transition-colors hover:bg-[#1f1a16]"
+            >
+              GitHub →
+            </a>
+            <a
+              href={siteConfig.links.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 items-center rounded-md border bg-transparent px-4 text-[13px] font-medium text-(--color-ink) transition-colors hover:border-(--color-rule-strong)"
+              style={{ borderColor: "var(--color-rule)" }}
+            >
+              LinkedIn
+            </a>
+            <Link
+              href="/resume"
+              className="inline-flex h-9 items-center rounded-md border bg-transparent px-4 text-[13px] font-medium text-(--color-ink) transition-colors hover:border-(--color-rule-strong)"
+              style={{ borderColor: "var(--color-rule)" }}
+            >
+              Resume
+            </Link>
+            <a
+              href={`mailto:${siteConfig.author.email}`}
+              className="inline-flex h-9 items-center rounded-md border bg-transparent px-4 text-[13px] font-medium text-(--color-ink) transition-colors hover:border-(--color-rule-strong)"
+              style={{ borderColor: "var(--color-rule)" }}
+            >
+              Email
+            </a>
+          </div>
+        </Container>
+      </section>
+
+      {/* Selected work */}
+      <section>
+        <Container width="wide">
+          <SectionLabel>Selected work</SectionLabel>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {grid.map((p) => (
+              <ProjectCard key={p.slug} project={p} />
+            ))}
+          </div>
+
+          {feature ? (
+            <div className="mt-4">
+              <ProjectCard project={feature} feature />
+            </div>
+          ) : null}
+        </Container>
+      </section>
+
+      {/* Recent writing */}
+      <section className="pb-12">
+        <Container width="standard">
+          <SectionLabel>Recent writing</SectionLabel>
+
+          {posts.length === 0 ? (
+            <p className="font-serif text-[15px] italic text-(--color-ink-muted)">
+              First writeups landing May 2026.
+            </p>
+          ) : (
+            <ul
+              className="divide-y"
+              style={{ borderColor: "var(--color-rule)" }}
+            >
+              {posts.slice(0, 5).map((post) => (
+                <li key={post.slug}>
+                  <PostRow post={post} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </Container>
+      </section>
+    </>
   );
 }
