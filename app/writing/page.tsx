@@ -19,8 +19,8 @@ export default async function WritingPage() {
           Notes from the build.
         </h1>
         <p className="mt-5 max-w-2xl font-serif text-[17px] leading-[1.55] text-(--color-ink-muted)">
-          Working notes on Microsoft Fabric, Medallion architecture, MCP server
-          design, and the strange new feeling of pair-programming with Claude.
+          Notes on data engineering, Microsoft Fabric, and what it means to
+          build production systems in the age of AI-augmented development.
         </p>
 
         <div className="mt-12">
