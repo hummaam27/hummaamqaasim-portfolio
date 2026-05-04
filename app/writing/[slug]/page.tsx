@@ -5,6 +5,8 @@ import { MdxContent } from "@/components/mdx-content";
 import { siteConfig } from "@/site-config";
 import { getAllPosts, getPostBySlug } from "@/lib/content";
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((p) => ({ slug: p.slug }));

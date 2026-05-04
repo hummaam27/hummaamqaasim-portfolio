@@ -6,6 +6,7 @@ import { getAllProjects, getProjectBySlug } from "@/lib/content";
 export const alt = "Project case study";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+export const dynamic = "force-static";
 
 export async function generateStaticParams() {
   const projects = await getAllProjects();

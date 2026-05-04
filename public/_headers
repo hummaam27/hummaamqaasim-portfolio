@@ -1,0 +1,25 @@
+# Cloudflare Pages — response headers config
+
+# OpenGraph images (Next.js metadata routes have no .png extension)
+/opengraph-image
+  Content-Type: image/png
+  Cache-Control: public, max-age=31536000, immutable
+
+/projects/*/opengraph-image
+  Content-Type: image/png
+  Cache-Control: public, max-age=31536000, immutable
+
+# Long-lived cache on hashed Next.js static assets
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Long-lived cache on the OG font (pulled from app bundle, not public)
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Default secure headers for all routes
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
