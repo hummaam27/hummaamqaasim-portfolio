@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 /* ============================================================================
    Warm Editorial Design System — hummaamqaasim.com
@@ -163,4 +164,145 @@
 /* Mono utility for year stamps, dates, tags */
 .mono {
   font-family: var(--font-mono);
+}
+
+/* ============================================================================
+   Editorial prose — applied to MDX bodies on project + writing detail pages.
+   Uses serif body, generous leading, terracotta accent links + drop cap.
+   ============================================================================ */
+.editorial-prose {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--color-ink);
+}
+
+.editorial-prose > * + * {
+  margin-top: 1.1em;
+}
+
+.editorial-prose h1,
+.editorial-prose h2,
+.editorial-prose h3,
+.editorial-prose h4 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+}
+.editorial-prose h1 { font-size: 32px; line-height: 1.1; }
+.editorial-prose h2 { font-size: 24px; line-height: 1.2; }
+.editorial-prose h3 { font-size: 19px; line-height: 1.3; }
+
+.editorial-prose a {
+  color: var(--color-terracotta);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+}
+.editorial-prose a:hover {
+  color: var(--color-terracotta-deep);
+}
+
+.editorial-prose strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.editorial-prose em {
+  font-style: italic;
+}
+
+.editorial-prose blockquote {
+  border-left: 2px solid var(--color-terracotta);
+  padding-left: 1.2em;
+  font-style: italic;
+  color: var(--color-ink-muted);
+  margin-left: 0;
+}
+
+.editorial-prose ul,
+.editorial-prose ol {
+  padding-left: 1.4em;
+}
+
+.editorial-prose ul li::marker {
+  color: var(--color-terracotta);
+}
+
+.editorial-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background-color: var(--color-tint);
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+}
+
+.editorial-prose pre {
+  background-color: var(--color-paper-2);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  padding: 1em 1.2em;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.editorial-prose pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+.editorial-prose hr {
+  border: 0;
+  height: 1px;
+  background-color: var(--color-rule);
+  margin: 2.5em 0;
+}
+
+/* Editorial signature: drop cap on first paragraph after H1 */
+.editorial-prose.has-dropcap > p:first-of-type::first-letter {
+  font-family: var(--font-serif);
+  font-size: 4em;
+  line-height: 0.9;
+  font-weight: 500;
+  color: var(--color-terracotta);
+  float: left;
+  padding-right: 0.08em;
+  padding-top: 0.08em;
+  margin-bottom: -0.1em;
+}
+
+@media (max-width: 640px) {
+  .editorial-prose.has-dropcap > p:first-of-type::first-letter {
+    font-size: 3.2em;
+  }
+}
+
+/* rehype-pretty-code line-by-line styling */
+.editorial-prose pre [data-line] {
+  display: block;
+  padding: 0 0.5em;
+}
+.editorial-prose pre [data-highlighted-line] {
+  background-color: rgba(185, 90, 58, 0.08);
+  border-left: 2px solid var(--color-terracotta);
+}
+.editorial-prose pre code[data-line-numbers] {
+  counter-reset: line;
+}
+.editorial-prose pre code[data-line-numbers] > [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 1.5em;
+  margin-right: 1em;
+  text-align: right;
+  color: var(--color-ink-faint);
 }
