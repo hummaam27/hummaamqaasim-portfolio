@@ -10,7 +10,7 @@ export const siteConfig = {
     name: "Hummaam Qaasim",
     location: "Annapolis, Maryland",
     role: "Data Engineer",
-    company: "Sunburst Workforce Advisors",
+    company: "Healthcare workforce MSP (stealth)",
     // TODO: Hummaam to revise — placeholder bio, refine voice and specifics before launch
     bio: "I build production data platforms and AI-augmented BI systems. Currently architecting a five-source Medallion lakehouse in Microsoft Fabric, building custom MCP servers for AI-augmented data engineering, and exploring the intersection of cloud, data, and AI.",
     email: "hummaam@hummaamqaasim.com",
@@ -29,8 +29,6 @@ export const siteConfig = {
     { href: "/resume", label: "Resume" },
     { href: "/contact", label: "Contact" },
   ],
-
-  footer: "Built with care from Annapolis.",
 } as const;
 
 export type SiteConfig = typeof siteConfig;

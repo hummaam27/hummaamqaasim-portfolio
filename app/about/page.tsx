@@ -37,7 +37,7 @@ export default function AboutPage() {
         {/* TODO: Hummaam to revise — placeholder bio paragraphs */}
         <div className="mt-8 space-y-7 font-serif text-[17px] leading-[1.65] text-(--color-ink)">
           <p>
-            I&apos;m the founding data hire at Sunburst Workforce Advisors,
+            I&apos;m the founding data hire at a healthcare workforce MSP,
             where I&apos;m architecting a five-source Medallion lakehouse in
             Microsoft Fabric — unifying staffing, payroll, ATS, CRM, and
             financial platforms into a single canonical model. Alongside that I

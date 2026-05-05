@@ -65,9 +65,8 @@ export default function ResumePage() {
                 style={{ backgroundColor: "var(--color-terracotta)" }}
               />
               <span>
-                Founding data hire at Sunburst Workforce Advisors —
-                architected a five-source Medallion lakehouse in Microsoft
-                Fabric.
+                Founding data hire at a healthcare workforce MSP — architected
+                a five-source Medallion lakehouse in Microsoft Fabric.
               </span>
             </li>
             <li className="flex gap-3">
