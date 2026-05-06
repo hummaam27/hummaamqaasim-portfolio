@@ -4,10 +4,38 @@ slug: "imanic"
 description: "Building a learning platform for Muslim teenagers and their parents. Mid-2026 launch. Where ten years of teaching becomes a product."
 date: "2025-09-01"
 status: "active"
-tech: ["Next.js", "Directus", "Stripe"]
+tech: ["Next.js 15", "NestJS 11", "Directus", "PostgreSQL", "Stripe", "Mux", "OpenAI"]
 demo: "https://imanic.online"
 featured: true
 order: 3
 ---
 
-[STUB — content added once Imanic public-launches.]
+Imanic is a gamified learning platform for Muslim teenagers and their parents — courses, lessons, a daily quiz, an engine-agnostic game runtime, parent/child accounts, Stripe subscriptions, signed video. Solo build, mid-2026 launch.
+
+The shorter version: a working multi-tenant SaaS, end-to-end, that I built because I wanted to know what every layer of a real production system looks like from the inside.
+
+## What's in the box
+
+A Next.js 15 / React 19 frontend in front of a NestJS 11 backend, both TypeScript-strict, sitting on Directus and PostgreSQL. Around 900 source files. Stripe handles subscriptions, Mux handles signed video playback, Sentry handles errors with sensitive-data redaction, Render and Cloudflare handle infrastructure. Auth is HttpOnly-cookie JWT with OTP email verification and Google OAuth. There's a parent/child account model with subject-resolution authorization — a parent acting on behalf of a child is a different thing from being authenticated as that child, and the codebase keeps the distinction crisp.
+
+## The choices that mattered
+
+**Backend-for-Frontend, not direct CMS access.** The browser never talks to Directus. Every request crosses Next.js API routes → NestJS → Directus → Postgres, with auth re-validated at each boundary. Same instinct as putting business logic at the Gold layer of a Medallion lakehouse and refusing to let report authors reach into Bronze.
+
+**Idempotency on the reward economy.** Every event that grants XP, gems, badges, or streak credit flows through one orchestrator service with deterministic idempotency keys. A retried daily-quiz award becomes a no-op, not a duplicate credit. Same exactly-once posture I apply to Delta MERGE patterns when ingesting a vendor that loves to send the same payload twice.
+
+**Design tokens as the single source of truth for visuals.** Every color and type scale lives in `design-tokens/index.ts` and is wired through Tailwind v4. Components consume token-backed classes, never raw hex. Same instinct that drives thirty-plus Power BI reports onto one governed semantic model: lock the definitions in one place, eliminate drift downstream.
+
+**Edge middleware with fail-closed defaults.** CSP, HSTS, rate limiting, and a preview guard all run at the edge. The preview guard fails closed — if no key is configured, all traffic is blocked. The kind of decision you only make once you've watched a "temporarily disable the check" ship to production and sit there for a year.
+
+## The piece I'm most proud of
+
+The daily-quiz pipeline runs as a cron job at 12:01 AM Eastern. It generates a candidate question with an LLM, embeds the candidate with OpenAI's `text-embedding-3-small` at 512 dimensions, and rejects on cosine similarity at or above 0.85 against any historical question — with a Jaccard fingerprint fallback and a 60-day subtopic cooldown so the same area never repeats inside two months. Each accepted question is persisted with its embedding so the next run benefits from the new history point.
+
+It's the smallest piece of the codebase and the one that maps most directly to where Microsoft Fabric is heading: vector search in OneLake, AI Skills inside semantic models, Copilot grounded against governed data. Nice to have those instincts in working memory rather than in a certification deck.
+
+## Why a data engineer built a full-stack SaaS
+
+Because layered architecture, idempotency, governance through a single source of truth, and fail-closed defaults aren't data-specific. They're how you build anything that has to keep working when nobody is looking.
+
+Also because I don't wait to be taught. I learn what I need to ship the next thing, then ship it.
