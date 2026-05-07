@@ -1,41 +1,123 @@
 ---
-title: "Imanic — Islamic edtech for the next generation"
+title: "Imanic — A Gamified Learning Platform"
 slug: "imanic"
-description: "Building a learning platform for Muslim teenagers and their parents. Mid-2026 launch. Where ten years of teaching becomes a product."
+description: "Solo-built edtech platform for homeschool families. Where the interesting data engineering hides inside a consumer app."
 date: "2025-09-01"
 status: "active"
-tech: ["Next.js 15", "NestJS 11", "Directus", "PostgreSQL", "Stripe", "Mux", "OpenAI"]
+tech: ["NestJS", "PostgreSQL", "OpenAI Embeddings", "Stripe", "Mux", "Next.js"]
 demo: "https://imanic.online"
 featured: true
 order: 3
 ---
 
-Imanic is a gamified learning platform for Muslim teenagers and their parents — courses, lessons, a daily quiz, an engine-agnostic game runtime, parent/child accounts, Stripe subscriptions, signed video. Solo build, mid-2026 launch.
+# Imanic — Where the Data Engineering Hides Inside a Consumer App
 
-The shorter version: a working multi-tenant SaaS, end-to-end, that I built because I wanted to know what every layer of a real production system looks like from the inside.
+## What It Is
 
-## What's in the box
+Imanic is a gamified edtech platform built for homeschool families — courses, lessons, a daily quiz, an XP and badge economy, parent/child accounts where parents oversee their kids' progress, Stripe subscriptions, signed video playback. Solo build, mid-2026 launch. Around 900 source files, TypeScript-strict end to end.
 
-A Next.js 15 / React 19 frontend in front of a NestJS 11 backend, both TypeScript-strict, sitting on Directus and PostgreSQL. Around 900 source files. Stripe handles subscriptions, Mux handles signed video playback, Sentry handles errors with sensitive-data redaction, Render and Cloudflare handle infrastructure. Auth is HttpOnly-cookie JWT with OTP email verification and Google OAuth. There's a parent/child account model with subject-resolution authorization — a parent acting on behalf of a child is a different thing from being authenticated as that child, and the codebase keeps the distinction crisp.
+I built it because I wanted to know what every layer of a real production system looks like from the inside — including the layers a data engineer at a healthcare staffing MSP doesn't normally get to touch. What I found, the deeper I went, was that the most interesting parts of the system weren't the React components or the routing. They were the things data engineers actually argue about in design reviews: idempotency under retry, dedup against semantic similarity, schema design under multi-tenant constraints, indexes designed around access patterns instead of bolted on after profiling.
 
-## The choices that mattered
+This case study covers the four pieces I'd want to discuss in a Senior Data Engineer interview, and the two production fires that taught me how to build them.
 
-**Backend-for-Frontend, not direct CMS access.** The browser never talks to Directus. Every request crosses Next.js API routes → NestJS → Directus → Postgres, with auth re-validated at each boundary. Same instinct as putting business logic at the Gold layer of a Medallion lakehouse and refusing to let report authors reach into Bronze.
+## The November Webhook Week
 
-**Idempotency on the reward economy.** Every event that grants XP, gems, badges, or streak credit flows through one orchestrator service with deterministic idempotency keys. A retried daily-quiz award becomes a no-op, not a duplicate credit. Same exactly-once posture I apply to Delta MERGE patterns when ingesting a vendor that loves to send the same payload twice.
+The strongest engineering lesson I've taken out of this build came in a single day on the Stripe integration.
 
-**Design tokens as the single source of truth for visuals.** Every color and type scale lives in `design-tokens/index.ts` and is wired through Tailwind v4. Components consume token-backed classes, never raw hex. Same instinct that drives thirty-plus Power BI reports onto one governed semantic model: lock the definitions in one place, eliminate drift downstream.
+November 9, 2025. Three commits in rapid succession on `stripe.service.ts`. The first one fetches data from the Stripe API because the webhook payload arrived incomplete — missing fields the consumer needed. The second adds retry logic and verification on billing customer creation, because the customer object wasn't reliably present when checkout completion fired. The third adds a delay to `subscription.updated`, because the update event was arriving before `subscription.created` had finished writing. Three race conditions, same morning.
 
-**Edge middleware with fail-closed defaults.** CSP, HSTS, rate limiting, and a preview guard all run at the edge. The preview guard fails closed — if no key is configured, all traffic is blocked. The kind of decision you only make once you've watched a "temporarily disable the check" ship to production and sit there for a year.
+What I had thought was true going in: webhooks are at-least-once, the signature verification handles security, and the consumer's job is to apply the event to local state. What turned out to be true: webhooks are at-least-once *and* arrive out of order *and* sometimes carry incomplete payloads *and* race against each other when two related events fire close together. The fix wasn't one fix. It was three different patterns for three different failure modes:
 
-## The piece I'm most proud of
+- Incomplete payloads → re-fetch the canonical object from the Stripe API before processing
+- Out-of-order delivery → introduce a small ordering delay on the dependent event
+- Customer creation race → retry with verification before the dependent path can run
 
-The daily-quiz pipeline runs as a cron job at 12:01 AM Eastern. It generates a candidate question with an LLM, embeds the candidate with OpenAI's `text-embedding-3-small` at 512 dimensions, and rejects on cosine similarity at or above 0.85 against any historical question — with a Jaccard fingerprint fallback and a 60-day subtopic cooldown so the same area never repeats inside two months. Each accepted question is persisted with its embedding so the next run benefits from the new history point.
+Ten days later, the same lesson got applied somewhere else entirely. On November 19, I added composite-unique idempotency on the user points table — `(user_id, source, reference_slug)` — and wrote a backfill script to retrofit reference slugs onto the existing rows. The XP system had been running for three months without database-level idempotency. The Stripe fires had taught me that webhook-driven systems aren't safe at the application layer alone; the constraints have to live in the database where the data does. I generalized the lesson before it became a fire on the XP path too.
 
-It's the smallest piece of the codebase and the one that maps most directly to where Microsoft Fabric is heading: vector search in OneLake, AI Skills inside semantic models, Copilot grounded against governed data. Nice to have those instincts in working memory rather than in a certification deck.
+I want to be honest here: I don't have a commit that says "fix duplicate XP credit." I didn't ship the November fix because XP had already been corrupted. I shipped it because the Stripe fires made it obvious that the same class of bug was sitting unexploded inside a different code path. That distinction matters. Senior engineers don't only fix what's burning — they generalize from the fire and harden the things adjacent to it.
 
-## Why a data engineer built a full-stack SaaS
+## Three Takes on the Daily Quiz
 
-Because layered architecture, idempotency, governance through a single source of truth, and fail-closed defaults aren't data-specific. They're how you build anything that has to keep working when nobody is looking.
+The dedup pipeline is in its third architecture. The git history goes back to August 2025, and you can read each version as a lesson the previous one taught.
 
-Also because I don't wait to be taught. I learn what I need to ship the next thing, then ship it.
+**v1, September 7, 2025 — category rotation plus duplicate detection.** First serious attempt. Rotate through categories, check for exact-match duplicates. Worked until it didn't. Same questions came back with minor wording changes and the duplicate check let them through.
+
+**v2, November 28, 2025 — answer fingerprinting plus progressive temperature.** Hash the answer text, store the hash, reject collisions. Bump the LLM temperature on each retry to encourage variety. This held for a few months. The problem it didn't solve: questions with reworded answers that ask the same thing. *"What year did X happen?"* and *"In what year did X take place?"* hash to different fingerprints but ask the same question. The fingerprint was checking surface form when the duplicate was at the level of meaning.
+
+**v3, April 30, 2026 — semantic embeddings plus Jaccard fallback plus subtopic LRU plus rescue threshold.** This is the version running today. A NestJS cron at 12:01 AM Eastern generates a candidate, embeds it with `text-embedding-3-small` at 512 dimensions, rejects on cosine similarity at or above 0.85 against history. A token-set Jaccard check at 0.35 catches near-duplicates with different surface forms that the embedding still missed. A 60-day cooldown picks from the five least-recently-used subtopics to keep topical variety. On the final retry of the day, the Jaccard threshold relaxes to 0.6 — a rescue threshold I added preemptively when moving to semantics. The reasoning was that v2's rejection rate was already climbing as history grew, and v3's stricter semantic check would push it higher; I wanted strict-by-default with operational headroom on the bad day, not a stuck cron.
+
+The v3 rollout came with a backfill: every existing quiz had to be re-embedded retroactively before the dedup engine could compare new candidates against history. I wrote a one-shot script for that and threw it away after the migration ran. That's the kind of operational detail that doesn't show up in product changelogs but absolutely shows up in real engineering: the schema change isn't done when the new table is shaped right; it's done when the historical data has been migrated into the new shape.
+
+What I'd refactor next: the embeddings live as a JSON column on the `daily_quiz` Directus collection. Similarity search is an in-memory linear scan over roughly 730 rows. Fine at this scale, a real bottleneck before scaling. If I were starting today against pgvector, I'd use it.
+
+## The Index Strategy and the Idempotent Reward Ledger
+
+This is the paired story I'd lead with in a data engineering interview, because the indexes and the idempotency layer are the same story told from two sides — one is the access pattern, the other is the schema that supports it.
+
+**Indexes designed around the access patterns, not bolted on after profiling.** The schema has 237 lines of index work in `performance_indexes.sql`, none of it autogenerated. Every index exists because a specific query asks for it:
+
+- A covering index on `user_points (user_id, source, date_created)` supports two of the hottest paths in the system: the XP idempotency lookup before a grant, and the history scan that backs the daily-quiz dedup engine. Both run as index-only reads.
+- A composite UNIQUE on `user_points (user_id, source, reference_slug)` is what makes the idempotency story enforceable at the database layer instead of in application code. The constraint prevents the same XP grant from being written twice — Postgres rejects it before the application ever sees the duplicate.
+- A leaderboard index on `game_scores (game_slug, high_score DESC)` supports top-N ordering without a sort step.
+- Partial indexes with `WHERE` clauses on the selective columns to cut write amplification.
+- A filtered block index keyed only on `blocked_flag = true` so the moderation path stays fast even as the user table grows.
+
+**The reward coordinator is one entry point with three layers of idempotency.** Every event that grants XP, gems, badges, or streak credit flows through `LearningEventsService`. The coordinator calls activity-attempt logging, the reward engine, the gem engine, the badge engine, and the user-points ledger sequentially. One entry point, deterministic call order, every grant traceable.
+
+Idempotency lives in three layers, all enforced in Postgres rather than in application code:
+
+1. `activity_attempts.submission_id` is a UNIQUE index. Duplicate submissions raise Postgres error 23505, which the service catches and returns the original record. The retry sees the same answer it would have seen on first write.
+2. `user_points` has the composite UNIQUE on `(user_id, source, reference_slug)` — same constraint, same access pattern as the read index.
+3. An `idempotency_records` table keyed on `(user_id, idempotency_key, operation_type)` catches the operations that don't have a natural composite key.
+
+A unit test double-fires the same idempotency key and asserts the gem-award path runs exactly once. Replay-as-no-op is a property of the system, not a hope.
+
+**The honest gap, and the trade-off framing that goes with it.** The grant is not transactional. There's no `BEGIN`/`COMMIT` wrapping the whole sequence. Everything routes through the Directus SDK over REST — the data layer is a remote service, not a Postgres connection I can open a transaction on. If gems succeed and XP fails, the user sees a partial grant. The recovery story is replay via the idempotency key, not rollback.
+
+In a design review, this is the question I'd expect: *"Why no transaction?"* My answer: I picked durability of the audit trail (every step writes its own row before the next step runs) over atomicity of the user-facing state. A partial grant is recoverable by retrying the same idempotency key — the layers that already succeeded short-circuit, the layers that failed re-execute. An atomic version would require either pulling the data layer into Postgres directly (breaking the Directus pattern the rest of the system uses) or implementing a saga with compensating transactions (a much bigger lift for a single-developer launch). For a consumer learning app where reward state can briefly drift and self-heal on retry, the current shape is the right scope. For a fintech ledger, it wouldn't be.
+
+## Stripe Webhooks After the Fires
+
+After the November fires, the webhook handler looks like this. Signatures verified server-side via `stripe.webhooks.constructEvent`. Every event lands in a `stripe_webhook_events` table keyed on `stripe_event_id` UNIQUE. Check-before-process: if the event ID already exists, return early. Stripe retries at-least-once delivery; the table makes the consumer effectively-once.
+
+Subscription state lives in a dedicated `billing_subscriptions` table — status, plan, seat count, period start and end, `cancel_at_period_end`, the Stripe price ID. State transitions are driven entirely by webhooks, which means subscription state in our database is always a downstream projection of Stripe's source of truth. Seat downgrade is the one path with non-trivial billing-to-domain coupling: when a parent reduces their seat count, the system has to pick which child accounts to suspend, in what order, with what notification. I shipped tests for that path before shipping the path itself.
+
+## Parent/Child Authorization
+
+This one I designed up front and didn't have to rebuild — worth saying because most of the system has a rebuild story and this section honestly doesn't.
+
+The data model is a self-foreign-key on `directus_users.parent_account_id`. One parent, many children. A `SubjectResolutionGuard` reads the `subjectUserId` from the request, confirms the child belongs to the authenticated parent, and only then issues the privileged query. A unit test exercises the cross-parent attack: a parent attempting to access a non-child throws `ForbiddenException`. An in-memory cache on the parent-to-children lookup may briefly serve a just-unlinked child for up to thirty seconds, which is a known property worth knowing rather than a bug worth hiding.
+
+Authorization is enforced in code, not in Postgres row-level security. The data layer sits behind a static admin token, so the database itself doesn't know which user a request belongs to — the guard knows. That's an honest architecture, not a deep one. Anyone who tells you they have RLS-everywhere on a multi-tenant app probably doesn't.
+
+## Edge Security and Observability
+
+Two pieces I want to flag because they show up in operational conversations more often than people expect.
+
+The preview guard is fail-closed by default. Missing `PREVIEW_KEY` environment variable causes all traffic to rewrite to a coming-soon page. There's an explicit disabled escape hatch when I want to bypass it intentionally, but the default behavior is "no key, no traffic." The kind of decision you only make once you've watched a "temporarily disabled" flag ship to production and sit there for a year. HSTS is configured at three layers — Next config, Next middleware, Nest main — for defense in depth.
+
+Sentry observability has a real noise budget. PII redaction in breadcrumbs strips password, token, secret, and authorization keys before they reach the wire. Throttler exceptions are filtered so 429s don't pollute the alert feed. Profiling falls back gracefully when native binaries aren't available for the runtime. The whole module is prod-only gated to preserve free-tier quota. None of that is exotic, but it's all the kind of thing that gets skipped on solo projects, and it shows the difference between "I shipped it" and "I'm running it."
+
+## What I'm Not Going to Overclaim
+
+Three things I want to call out, because the right answer in a portfolio is to name what's true and name what isn't.
+
+Auth is hard-validated at one boundary, not at every layer. Requests go from the Next.js API route to the NestJS controller, which verifies the JWT signature against a Redis session. From NestJS to Directus, the system uses a static admin token — there's no per-user context at the database layer. Subject-level authorization is enforced by the guard before the privileged query runs, not by the database.
+
+Rate limiting is per-worker, in-memory. It's a `Map` in process memory, 60 requests per minute per IP on `/api/*`. Lost on restart. Not distributed across workers. Fine for launch traffic, not production-grade.
+
+The dedup engine is essentially untested. There's a security spec for the surrounding endpoints, but zero unit tests for the cosine-similarity path, the Jaccard fallback, or the subtopic cooldown. The system is verified by manual test runs and observed daily-quiz output over time, not by a test harness. That's a known debt.
+
+The honest framing for the system as a whole: single-instance scale today. If traffic warranted it, the next moves are pgvector for the embedding store, Redis-backed rate limiting, and a transactional outbox pattern for the reward grants. I know what I'd build next; I haven't built it yet because the current scale doesn't justify it.
+
+## The Through-Line
+
+Layered architecture, idempotency, schema design as a contract, indexes designed around access patterns instead of bolted on later — these aren't data-specific patterns. The same composite-unique constraint that enforces idempotency on a reward ledger has the same shape as the natural-key MERGE condition I write against bronze tables in a Fabric medallion. The same exactly-once posture I bring to a Delta MERGE on a vendor that loves to send the same payload twice is what makes a Stripe webhook handler effectively-once after a hard week of debugging it. The lessons travel.
+
+I built Imanic because I wanted to know what every layer of a real production system looks like from the inside. What I found is that the layers I already knew from data engineering — idempotency, governance through a single source of truth, indexes shaped by the questions the data has to answer, and the discipline of generalizing from the fire before it spreads — are the same layers that matter in a consumer SaaS. The vocabulary changes, but the work doesn't.
+
+## The Stack
+
+NestJS 11 (TypeScript-strict) on Node 22, Next.js 15 / React 19 frontend, Directus on PostgreSQL, Stripe for billing, Mux for signed video, Sentry for errors, Render and Cloudflare for infrastructure. Around 900 source files, solo build, mid-2026 launch.
+
+[Live demo →](https://imanic.online)
