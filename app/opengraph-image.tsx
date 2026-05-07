@@ -81,7 +81,7 @@ export default async function Image() {
               maxWidth: 880,
             }}
           >
-            Production data platforms, AI-augmented BI, and custom MCP servers.
+            Production Microsoft Fabric Medallion lakehouses and governed Power BI semantic models.
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import { getAllPosts } from "@/lib/content";
 export const metadata = {
   title: "Writing",
   description:
-    "Notes on data engineering, Microsoft Fabric, MCP servers, and the AI-augmented BI workflow.",
+    "Senior Analytics Engineer architecting production Microsoft Fabric Medallion lakehouses and governed Power BI semantic models. Founding data hire at a healthcare workforce MSP.",
 };
 
 export default async function WritingPage() {

@@ -5,7 +5,7 @@ import { getAllProjects } from "@/lib/content";
 export const metadata = {
   title: "Projects",
   description:
-    "Selected case studies — production data platforms, AI-augmented BI, MCP servers.",
+    "Senior Analytics Engineer architecting production Microsoft Fabric Medallion lakehouses and governed Power BI semantic models. Founding data hire at a healthcare workforce MSP.",
 };
 
 export default async function ProjectsPage() {

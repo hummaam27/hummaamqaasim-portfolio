@@ -43,7 +43,7 @@ export default function ContactPage() {
         </h1>
         <p className="mt-6 font-serif text-[17px] leading-[1.55] text-(--color-ink)">
           Best for: senior data engineering roles, Microsoft Fabric work, or a
-          conversation about MCP and AI-augmented BI.
+          conversation about analytics engineering and AI-augmented BI.
         </p>
 
         <ul

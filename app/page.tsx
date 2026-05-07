@@ -13,8 +13,6 @@ export default async function Home() {
   ]);
 
   const featured = projects.filter((p) => p.featured);
-  const grid = featured.slice(0, 2);
-  const feature = featured[2];
 
   return (
     <>
@@ -22,7 +20,8 @@ export default async function Home() {
       <section className="pt-20 pb-4 sm:pt-28">
         <Container width="standard">
           <p className="eyebrow">
-            Data Engineer · {siteConfig.author.location.split(",")[0]}, MD
+            {siteConfig.author.role} ·{" "}
+            {siteConfig.author.location.split(",")[0]}, MD
           </p>
           <h1 className="mt-5 font-serif text-[36px] leading-[1.02] tracking-tight text-(--color-ink) sm:text-[46px]">
             {siteConfig.author.name}
@@ -73,16 +72,10 @@ export default async function Home() {
           <SectionLabel>Selected work</SectionLabel>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {grid.map((p) => (
+            {featured.map((p) => (
               <ProjectCard key={p.slug} project={p} />
             ))}
           </div>
-
-          {feature ? (
-            <div className="mt-4">
-              <ProjectCard project={feature} feature />
-            </div>
-          ) : null}
         </Container>
       </section>
 

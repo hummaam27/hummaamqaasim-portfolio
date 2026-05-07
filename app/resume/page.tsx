@@ -66,18 +66,7 @@ export default function ResumePage() {
               />
               <span>
                 Founding data hire at a healthcare workforce MSP — architected
-                a five-source Medallion lakehouse in Microsoft Fabric.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span
-                aria-hidden="true"
-                className="mt-[0.7em] block h-[6px] w-[6px] shrink-0"
-                style={{ backgroundColor: "var(--color-terracotta)" }}
-              />
-              <span>
-                Built custom MCP servers for AI-augmented data engineering and
-                BI workflows.
+                a four-source Medallion lakehouse in Microsoft Fabric.
               </span>
             </li>
             <li className="flex gap-3">
@@ -88,7 +77,7 @@ export default function ResumePage() {
               />
               <span>
                 Stack: Microsoft Fabric, Spark SQL, PySpark, Delta Lake, Power
-                BI, Python, TypeScript.
+                BI, DAX, Python, T-SQL, Azure DevOps.
               </span>
             </li>
           </ul>

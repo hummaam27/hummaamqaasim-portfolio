@@ -9,8 +9,7 @@ export const metadata = {
 };
 
 const currently = [
-  "Architecting a five-source Medallion lakehouse in Microsoft Fabric",
-  "Building a custom MCP server exposing Fabric warehouse operations to AI clients",
+  "Architecting a four-source Medallion lakehouse in Microsoft Fabric",
   "Imanic — Islamic edtech platform launching mid-2026",
   "DP-700 certification (in progress)",
 ];
@@ -21,7 +20,7 @@ const stack: Array<[string, string]> = [
     "Microsoft Fabric, Spark SQL, PySpark, Delta Lake, Power BI, Azure DevOps",
   ],
   ["LANGUAGES", "Python, SQL, TypeScript"],
-  ["AI / ML", "Model Context Protocol, Claude, semantic models"],
+  ["AI / ML", "Claude, semantic models"],
   ["FRONTEND", "Next.js, React, Tailwind, Directus"],
 ];
 
@@ -38,20 +37,18 @@ export default function AboutPage() {
         <div className="mt-8 space-y-7 font-serif text-[17px] leading-[1.65] text-(--color-ink)">
           <p>
             I&apos;m the founding data hire at a healthcare workforce MSP,
-            where I&apos;m architecting a five-source Medallion lakehouse in
-            Microsoft Fabric — unifying staffing, payroll, ATS, CRM, and
-            financial platforms into a single canonical model. Alongside that I
-            build custom MCP servers that let AI clients query our warehouse
-            and semantic models directly. The work that excites me sits at the
-            intersection of cloud, data, and AI: building infrastructure that
-            makes good decisions cheap.
+            where I&apos;m architecting a four-source Medallion lakehouse in
+            Microsoft Fabric — unifying staffing, payroll, ATS, and
+            financial platforms into a single canonical model. The work that
+            excites me sits at the intersection of cloud, data, and AI:
+            building infrastructure that makes good decisions cheap.
           </p>
           <p>
             Outside of engineering, I serve as Imam at the Islamic Society of
             Annapolis. Ten years of teaching teenagers about Islamic theology
             taught me how to translate dense, abstract material into something
             a fifteen-year-old can actually use — that&apos;s the skill I bring
-            to data modeling, MCP server design, and to{" "}
+            to data modeling and to{" "}
             <a
               href="https://imanic.online"
               target="_blank"

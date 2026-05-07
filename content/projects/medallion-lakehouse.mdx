@@ -1,7 +1,7 @@
 ---
 title: "Medallion Lakehouse"
 slug: "medallion-lakehouse"
-description: "Founding architecture work unifying five workforce platforms into a canonical Fabric lakehouse."
+description: "Founding architecture work unifying four workforce platforms into a canonical Fabric lakehouse."
 date: "2025-02-01"
 status: "shipped"
 tech: ["Microsoft Fabric", "PySpark", "Delta Lake", "Power BI", "DAX", "T-SQL", "Kimball", "REST API", "SFTP", "Azure DevOps"]
@@ -23,7 +23,7 @@ I proposed building a Medallion lakehouse architecture on Microsoft Fabric to re
 
 ## What Made This Hard
 
-I had never built a Medallion lakehouse before. I had never written PySpark in production. I knew Python fundamentals from coursework, and I'd seen the parent company's BI team operate their own Medallion — but I was committing to build a production data platform on a stack I hadn't shipped in before, while still running the old Friday process every week.
+Before this project I'd shipped Power BI semantic models, DAX measures, and SQL-based reporting work, but the Fabric medallion stack — PySpark in production, Delta Lake MERGE patterns, Kimball-style modeling against bronze — was new ground for me. I had five weeks to close that gap and ship the first version while still running the old Friday process every week. The way I closed it: studied the parent company's BI team's medallion implementation, read every Microsoft Fabric reference architecture I could find, and prototyped against the simplest of the four VMSs first to validate the patterns before scaling them across the other three.
 
 The technical complexity wasn't just "build a pipeline." It was unifying four completely different vendor systems into one canonical data model:
 
