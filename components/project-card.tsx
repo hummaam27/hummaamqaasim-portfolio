@@ -8,7 +8,6 @@ export function ProjectCard({
   project: Project;
   feature?: boolean;
 }) {
-  const year = new Date(project.date).getFullYear();
   return (
     <Link
       href={`/projects/${project.slug}`}
@@ -23,7 +22,7 @@ export function ProjectCard({
         ↗
       </span>
 
-      <div className="flex items-baseline justify-between gap-4 pr-8">
+      <div className="pr-8">
         <h3
           className={
             feature
@@ -33,9 +32,6 @@ export function ProjectCard({
         >
           {project.title}
         </h3>
-        <span className="mono shrink-0 text-[10.5px] tracking-wider text-(--color-terracotta)">
-          {year}
-        </span>
       </div>
 
       <p className="mt-3 text-[13px] leading-[1.6] text-(--color-ink-muted)">

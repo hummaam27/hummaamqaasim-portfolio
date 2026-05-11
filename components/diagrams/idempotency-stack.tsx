@@ -40,10 +40,7 @@ const LAYER_START_Y = 70;
 
 export function IdempotencyStack() {
   return (
-    <figure
-      className="not-prose relative left-1/2 my-14 -translate-x-1/2"
-      style={{ width: "min(96vw, 1180px)" }}
-    >
+    <figure className="not-prose figure-wide my-14">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"

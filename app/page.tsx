@@ -74,7 +74,7 @@ export default async function Home() {
               download
               className="group inline-flex h-10 items-center gap-1.5 rounded-md bg-(--color-terracotta) px-5 text-[13px] font-medium text-(--color-paper) shadow-[0_2px_8px_-3px_rgba(185,90,58,0.45)] transition-all duration-200 hover:bg-(--color-terracotta-deep) hover:shadow-[0_4px_14px_-4px_rgba(159,69,40,0.55)]"
             >
-              Download résumé
+              Download resume
               <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
             </a>
             <a

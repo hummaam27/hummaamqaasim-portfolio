@@ -16,13 +16,14 @@ const FACTS = [
   { id: "invoices",     label: "fact_invoices",     cols: ["inv_id", "facility_sk", "dt_sk", "amount"] },
 ] as const;
 
-// Dimension tables — 5 conformed dims placed around the center
+// Dimension tables — 4 conformed dims, one in each corner of the star.
+// (Prose mentions 6 in total; this diagram shows a representative subset
+// the way most published star schemas do.)
 const DIMS = [
   { id: "date",      label: "dim_date",      x: 90,        y: 90,  rows: ["date_sk", "iso_week", "fiscal_qtr"] },
   { id: "facility",  label: "dim_facility",  x: W - 290,   y: 90,  rows: ["facility_sk", "client_name", "region"] },
   { id: "worker",    label: "dim_worker",    x: W - 290,   y: 460, rows: ["worker_sk", "specialty", "tier"] },
   { id: "order",     label: "dim_order",     x: 90,        y: 460, rows: ["order_sk", "order_type", "lifecycle"] },
-  { id: "status",    label: "dim_status",    x: 90,        y: 275, rows: ["status_sk", "vms_native", "canonical"] },
 ] as const;
 
 // Which facts each dim connects to (visualizes "conformed dimensions")
@@ -31,7 +32,6 @@ const LINKS: Record<string, string[]> = {
   facility: ["orders", "invoices"],
   worker:   ["submissions", "shifts"],
   order:    ["orders", "submissions"],
-  status:   ["submissions", "timecards"],
 };
 
 const FACT_BOX_W = 175;
@@ -57,10 +57,7 @@ function dimCenter(dim: typeof DIMS[number]) {
 
 export function GoldStarSchema() {
   return (
-    <figure
-      className="not-prose relative left-1/2 my-14 -translate-x-1/2"
-      style={{ width: "min(96vw, 1180px)" }}
-    >
+    <figure className="not-prose figure-wide my-14">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"

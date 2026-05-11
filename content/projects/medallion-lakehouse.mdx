@@ -9,8 +9,6 @@ featured: true
 order: 2
 ---
 
-# Building a Multi-Source VMS Data Platform on Microsoft Fabric — From Zero
-
 ## The Problem
 
 I'm the founding data engineer at a healthcare staffing MSP that manages contingent workforces for hospitals and school districts across the country. When I joined, the company was three years in and running all of its financial and operational reporting off a chain of Power BI dataflows fed by manually pulled Excel files and scheduled email attachments.
@@ -58,8 +56,6 @@ The gold materialization runs as a transactional TRUNCATE+INSERT inside a stored
 
 One governed Power BI semantic model sits on top of the gold layer with all measures and business logic locked at the model level. 30+ reports draw from this single model. Row-Level Security ensures departments see only their data without duplicating reports.
 
-<GoldStarSchema />
-
 ## What Broke Along the Way
 
 **The resilient_upsert function was secretly an overwrite.** A backwards-compatibility alias in our shared utilities was delegating to `mode("overwrite")` instead of performing a real Delta MERGE. The "incremental" pipeline was filtering source data to a recent window and writing that window back as the entire bronze table. It hadn't caused visible damage yet — but only because the function had rarely fired with non-empty deltas. I rewrote it as a proper MERGE with a four-property behavioral test (initial write, update, preserve untouched rows, insert new) plus an idempotency check. The previous test was so weak it would have passed against the broken implementation, which is exactly why the bug shipped.
@@ -77,6 +73,16 @@ Before cutover, the new pipeline had to prove it agreed with the existing produc
 I built a multi-month reconciliation process that compared the new gold output against the legacy production data, per-VMS, per-grain, per-year. The comparison applied the same filters the legacy system used — because the legacy CSVs were pre-filtered differently per VMS before they reached the dataflow, so a naive comparison would show false mismatches.
 
 The final result: **99.5%+ reconciliation match across all four VMS sources and four years of order, timecard, and invoice history.** The remaining residuals were fully characterized as API-vs-CSV refresh-cadence drift — the new system pulled from live APIs while the legacy system read from periodic CSV exports — not logic gaps. I maintained a living reconciliation log that tracked every open quirk with a status legend (within tolerance, material gap, blocker, not started).
+
+<ReconciliationMatrix />
+
+## Results & Impact
+
+- **99.5%+ reconciliation match** across all four VMS sources and four years of order, timecard, and invoice history. Residuals fully characterized as refresh-cadence drift, not logic gaps.
+- **30+ Power BI reports collapsed onto one governed semantic model** with Row-Level Security, ending the "this doesn't match that" disputes between dashboards.
+- **The Friday manual-pull ritual is gone.** Spread reporting now flows from live API and SFTP ingestion through bronze → silver → gold without human assembly.
+- **~57 source tables across four vendor schemas** consolidated into 5 conformed fact tables and 6 dimensions on a Kimball star.
+- **Operational standards in place**: behavioral tests for MERGE patterns, documented deployment ordering for cross-layer schema changes, a living reconciliation log with status legend.
 
 ## What I'd Do Differently
 
