@@ -151,6 +151,13 @@
   }
 }
 
+/* Display face — Fraunces variable, used for header wordmark + future moments */
+.font-display {
+  font-family: var(--font-display, Charter, Georgia, serif);
+  font-feature-settings: "ss01", "kern";
+  font-variation-settings: "SOFT" 60, "opsz" 144;
+}
+
 /* Small caps editorial preheader — used on every page */
 .eyebrow {
   font-family: var(--font-sans);
@@ -172,8 +179,8 @@
    ============================================================================ */
 .editorial-prose {
   font-family: var(--font-serif);
-  font-size: 17px;
-  line-height: 1.65;
+  font-size: 19px;
+  line-height: 1.7;
   color: var(--color-ink);
 }
 
@@ -192,9 +199,9 @@
   margin-top: 1.8em;
   margin-bottom: 0.6em;
 }
-.editorial-prose h1 { font-size: 32px; line-height: 1.1; }
-.editorial-prose h2 { font-size: 24px; line-height: 1.2; }
-.editorial-prose h3 { font-size: 19px; line-height: 1.3; }
+.editorial-prose h1 { font-size: 38px; line-height: 1.08; }
+.editorial-prose h2 { font-size: 28px; line-height: 1.18; }
+.editorial-prose h3 { font-size: 22px; line-height: 1.3; }
 
 .editorial-prose a {
   color: var(--color-terracotta);

@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
+import { Fraunces } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { siteConfig } from "@/site-config";
 import "./globals.css";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  axes: ["SOFT", "opsz"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -34,7 +42,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className={`${fraunces.variable} h-full`}>
       <body className="flex min-h-full flex-col bg-(--color-paper) text-(--color-ink)">
         <Header />
         <main className="flex-1">{children}</main>

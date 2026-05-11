@@ -23,6 +23,8 @@ This case study is what AI-directed engineering actually looks like at the senio
 
 ## How This Was Actually Built
 
+<AIDirectedLoop />
+
 The pattern across eleven months looked like this. I'd start a feature with a written spec — what the user-facing behavior is, what the data model needs to look like, what the failure modes are, what the test would prove. Claude Code would draft the implementation against the spec, in a feature branch in a development workspace. I'd read the diff, push back on anything that didn't fit the architecture, run the tests, and iterate. When it was right, I'd open a pull request, review the full change set against the rest of the codebase, and merge. The deploy went out from main to production through Render's build pipeline.
 
 This was not vibe coding. The architecture decisions are mine. The schema is mine. The trade-offs are mine. The bugs that shipped to production and had to be rolled back were mine — Claude Code wrote them, but I approved them, and the lesson is mine. What I gained from the workflow was throughput. What I had to bring to it was judgment, and the discipline of building feedback loops the AI could operate inside.
@@ -57,6 +59,8 @@ The dedup pipeline is in its third architecture. The git history goes back to Au
 
 **v3, April 30, 2026 — semantic embeddings plus Jaccard fallback plus subtopic LRU plus rescue threshold.** This is the version running today. A NestJS cron at 12:01 AM Eastern generates a candidate, embeds it with `text-embedding-3-small` at 512 dimensions, rejects on cosine similarity at or above 0.85 against history. A token-set Jaccard check at 0.35 catches near-duplicates with different surface forms that the embedding still missed. A 60-day cooldown picks from the five least-recently-used subtopics to keep topical variety. On the final retry of the day, the Jaccard threshold relaxes to 0.6 — a rescue threshold added preemptively. The reasoning was that v2's rejection rate was already climbing as history grew, and v3's stricter semantic check would push it higher; I wanted strict-by-default with operational headroom on the bad day, not a stuck cron.
 
+<DedupFlow />
+
 The v3 rollout came with a backfill: every existing quiz had to be re-embedded retroactively before the dedup engine could compare new candidates against history. Wrote a one-shot script for that and threw it away after the migration ran. That kind of operational detail doesn't show up in product changelogs but absolutely shows up in real engineering — the schema change isn't done when the new table is shaped right; it's done when the historical data has been migrated into the new shape.
 
 What I'd refactor next: the embeddings live as a JSON column on the `daily_quiz` Directus collection. Similarity search is an in-memory linear scan over roughly 730 rows. Fine at this scale, a real bottleneck before scaling. If I were starting today against pgvector, I'd use it.
@@ -84,6 +88,8 @@ Idempotency lives in three layers, all enforced in Postgres rather than in appli
 3. An `idempotency_records` table keyed on `(user_id, idempotency_key, operation_type)` catches the operations that don't have a natural composite key.
 
 A unit test double-fires the same idempotency key and asserts the gem-award path runs exactly once. Replay-as-no-op is a property of the system, not a hope.
+
+<IdempotencyStack />
 
 **The honest gap, and the trade-off framing that goes with it.** The grant is not transactional. There's no `BEGIN`/`COMMIT` wrapping the whole sequence. Everything routes through the Directus SDK over REST — the data layer is a remote service, not a Postgres connection I can open a transaction on. If gems succeed and XP fails, the user sees a partial grant. The recovery story is replay via the idempotency key, not rollback.
 

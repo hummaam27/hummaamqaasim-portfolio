@@ -27,7 +27,7 @@ Before this project I'd shipped Power BI semantic models, DAX measures, and SQL-
 
 The technical complexity wasn't just "build a pipeline." It was unifying four completely different vendor systems into one canonical data model:
 
-**VMS A (REST API)** — our primary VMS, covering the most clients. REST API with a 364-day rolling window on the Orders endpoint. The API exposes a "new and modified since" filter, so we pull with a 3-day overlapping window and deduplicate downstream.
+**VMS A (REST API)** — our primary VMS, covering the most clients. The API exposes a "new and modified since" filter, so we pull with a 3-day overlapping window and deduplicate downstream.
 
 **VMS B (REST + Custom Report API)** — a Workday-ecosystem VMS with a REST API for core entities and a separate custom-report API for timecards and shifts. The critical constraint: the API only returns currently-active records. If a record is hard-deleted on their end, it silently disappears from the next pull. No notification, no tombstone, no audit trail.
 
@@ -38,6 +38,8 @@ The technical complexity wasn't just "build a pipeline." It was unifying four co
 Each source required its own ingestion pattern. You can't treat an API that only returns active records the same way you treat an API that tells you what changed. Pretending they're the same is how you get silent data loss.
 
 ## The Architecture
+
+<MedallionArchitecture />
 
 Three Fabric items, three layers:
 
@@ -56,6 +58,8 @@ The gold materialization runs as a transactional TRUNCATE+INSERT inside a stored
 
 One governed Power BI semantic model sits on top of the gold layer with all measures and business logic locked at the model level. 30+ reports draw from this single model. Row-Level Security ensures departments see only their data without duplicating reports.
 
+<GoldStarSchema />
+
 ## What Broke Along the Way
 
 **The resilient_upsert function was secretly an overwrite.** A backwards-compatibility alias in our shared utilities was delegating to `mode("overwrite")` instead of performing a real Delta MERGE. The "incremental" pipeline was filtering source data to a recent window and writing that window back as the entire bronze table. It hadn't caused visible damage yet — but only because the function had rarely fired with non-empty deltas. I rewrote it as a proper MERGE with a four-property behavioral test (initial write, update, preserve untouched rows, insert new) plus an idempotency check. The previous test was so weak it would have passed against the broken implementation, which is exactly why the bug shipped.
@@ -68,11 +72,11 @@ One governed Power BI semantic model sits on top of the gold layer with all meas
 
 ## The Validation
 
-The new pipeline isn't live yet. It can't go live without proving it agrees with the existing production dataflows that executives already depend on.
+Before cutover, the new pipeline had to prove it agreed with the existing production dataflows that executives already depended on.
 
-I built a multi-month reconciliation process that compares the new gold output against the legacy production data, per-VMS, per-grain, per-year. The comparison applies the same filters the legacy system uses — because the legacy CSVs are pre-filtered differently per VMS before they reach the dataflow, so a naive comparison would show false mismatches.
+I built a multi-month reconciliation process that compared the new gold output against the legacy production data, per-VMS, per-grain, per-year. The comparison applied the same filters the legacy system used — because the legacy CSVs were pre-filtered differently per VMS before they reached the dataflow, so a naive comparison would show false mismatches.
 
-Current state: **99.5%+ reconciliation match across all four VMS sources and four years of order, timecard, and invoice history.** The remaining residuals are fully characterized as API-vs-CSV refresh-cadence drift — the new system pulls from live APIs while the legacy system reads from periodic CSV exports — not logic gaps. I maintain a living reconciliation log that tracks every open quirk with a status legend (within tolerance, material gap, blocker, not started).
+The final result: **99.5%+ reconciliation match across all four VMS sources and four years of order, timecard, and invoice history.** The remaining residuals were fully characterized as API-vs-CSV refresh-cadence drift — the new system pulled from live APIs while the legacy system read from periodic CSV exports — not logic gaps. I maintained a living reconciliation log that tracked every open quirk with a status legend (within tolerance, material gap, blocker, not started).
 
 ## What I'd Do Differently
 
@@ -86,6 +90,3 @@ I would have pushed harder on the VMS vendors for API access earlier. The time s
 
 Microsoft Fabric (Lakehouses, Warehouses, Data Pipelines, Direct Lake, Fabric-Git integration), PySpark, Spark SQL, Delta Lake, Python, T-SQL, Power BI, DAX, Kimball star schema modeling, Azure DevOps with Git-based PR workflows, REST API integration, SFTP ingestion.
 
-## Current Status
-
-The medallion is built, validated, and in parallel-run alongside the legacy dataflows. Report cutover is pending final stakeholder sign-off. I manage two BI analysts and maintain the engineering standards, documentation, and testing frameworks for the data team.
