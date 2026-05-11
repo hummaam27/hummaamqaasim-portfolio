@@ -11,17 +11,17 @@ order: 2
 
 ## The Problem
 
-I'm the founding data engineer at a healthcare staffing MSP that manages contingent workforces for hospitals and school districts across the country. When I joined, the company was three years in and running all of its financial and operational reporting off a chain of Power BI dataflows fed by manually pulled Excel files and scheduled email attachments.
+I'm the founding data hire at a healthcare staffing MSP that manages contingent workforces for hospitals and school districts across the country. When I joined, the company was three years in and running all of its financial and operational reporting off a chain of Power BI dataflows fed by manually pulled Excel files and scheduled email attachments.
 
-Every Friday between 1pm and 5pm, the team had to pull spread data — the margin between what we bill facilities and what we pay workers — from four separate Vendor Management Systems, consolidate it by hand, and ship it to our parent company for financial reporting. Some of these VMS systems didn't offer consolidated exports. We were opening individual client tenants, downloading invoices one by one, and copy-pasting them into a master file. Some of the files arrived as Excel 97 format that Power BI's optimization engine couldn't parse. If something broke — a mispaste, a missed email schedule, a column that changed shape — the only way to see the fix was to republish the dataflow, wait 30 minutes, and check again. One Friday I closed my laptop at 7:30pm.
+Every Friday between 1pm and 5pm, the team had to pull spread data — the margin between what we bill facilities and what we pay workers — from four separate Vendor Management Systems, consolidate it by hand, and ship it to our parent company for financial reporting. Some of these VMS systems didn't offer consolidated exports. We were opening individual client tenants, downloading invoices one by one, and copy-pasting them into a master file. Some of the files arrived as Excel 97 format that Power BI's optimization engine couldn't parse. If something broke — a mispaste, a missed email schedule, a column that changed shape — the only way to see the fix was to republish the dataflow, wait 30 minutes, and check again.
 
 On top of that, the company had accumulated about 30 Power BI reports over the years, each with its own semantic model and locally defined measures. Same metric, different numbers in different reports. Constant complaints from stakeholders: "this doesn't match that." The root cause was structural — there was no single source of truth.
 
-I proposed building a Medallion lakehouse architecture on Microsoft Fabric to replace the entire stack. My manager agreed. I had five weeks.
+I proposed building a Medallion lakehouse architecture on Microsoft Fabric to replace the entire stack. My manager agreed.
 
 ## What Made This Hard
 
-Before this project I'd shipped Power BI semantic models, DAX measures, and SQL-based reporting work, but the Fabric medallion stack — PySpark in production, Delta Lake MERGE patterns, Kimball-style modeling against bronze — was new ground for me. I had five weeks to close that gap and ship the first version while still running the old Friday process every week. The way I closed it: studied the parent company's BI team's medallion implementation, read every Microsoft Fabric reference architecture I could find, and prototyped against the simplest of the four VMSs first to validate the patterns before scaling them across the other three.
+Before this project I'd shipped Power BI semantic models, DAX measures, and SQL-based reporting work, but the Fabric medallion stack — PySpark in production, Delta Lake MERGE patterns, Kimball-style modeling against bronze — was new ground for me. I had to close that gap and ship the first version while still running the old Friday process every week. The way I closed it: studied the parent company's BI team's medallion implementation, read every Microsoft Fabric reference architecture I could find, and prototyped against the simplest of the four VMSs first to validate the patterns before scaling them across the other three.
 
 The technical complexity wasn't just "build a pipeline." It was unifying four completely different vendor systems into one canonical data model:
 

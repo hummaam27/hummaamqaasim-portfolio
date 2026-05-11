@@ -1,17 +1,17 @@
 export const siteConfig = {
   name: "Hummaam Qaasim",
-  title: "Hummaam Qaasim — Analytics Engineer",
+  title: "Hummaam Qaasim — Senior Analytics Engineer",
   description:
-    "Analytics Engineer architecting production Microsoft Fabric Medallion lakehouses and governed Power BI semantic models. Founding data hire at a healthcare workforce MSP.",
+    "Senior Analytics Engineer architecting production Microsoft Fabric Medallion lakehouses and governed Power BI semantic models. Founding data hire at a healthcare workforce MSP.",
   url: "https://hummaamqaasim.com",
   ogImage: "https://hummaamqaasim.com/opengraph-image",
 
   author: {
     name: "Hummaam Qaasim",
     location: "Annapolis, Maryland",
-    role: "Analytics Engineer",
+    role: "Senior Analytics Engineer",
     company: "Healthcare workforce MSP (stealth)",
-    bio: "I architect production Microsoft Fabric Medallion lakehouses — bronze ingestion across REST APIs, custom-report APIs, and SFTP feeds; silver canonicalization; gold Kimball star schemas; governed Power BI semantic models with Row-Level Security on top. Currently the founding data hire at a healthcare workforce MSP, where the platform unifies four Vendor Management Systems into one trusted source of truth for executive reporting.",
+    bio: "I architect production Microsoft Fabric Medallion lakehouses — bronze ingestion across REST APIs, custom-report APIs, SFTP feeds, and live-shortcut sync; silver canonicalization; gold Kimball star schemas; governed Power BI semantic models with Row-Level Security on top. Currently the founding data hire at a healthcare workforce MSP, where the platform unifies four Vendor Management Systems into one trusted source of truth for executive reporting.",
     email: "hummaam@hummaamqaasim.com",
   },
 
