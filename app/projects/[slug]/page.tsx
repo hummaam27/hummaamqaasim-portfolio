@@ -53,11 +53,8 @@ export default async function ProjectPage({
               {project.title}
             </h1>
 
-            {/* Lead — italic Fraunces, ink-color, large. Carries the "what is this and why does it matter" */}
-            <p
-              className="mt-6 font-display-italic text-[22px] leading-[1.35] tracking-[-0.005em] text-(--color-ink) sm:text-[26px]"
-              style={{ fontVariationSettings: '"SOFT" 100, "opsz" 144' }}
-            >
+            {/* Lead — body serif, large. Carries the "what is this and why does it matter" */}
+            <p className="mt-6 font-serif text-[20px] leading-[1.5] text-(--color-ink) sm:text-[22px]">
               {project.description}
             </p>
 
