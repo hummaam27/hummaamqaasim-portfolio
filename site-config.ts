@@ -11,7 +11,7 @@ export const siteConfig = {
     location: "Annapolis, Maryland",
     role: "Analytics Engineer",
     company: "Healthcare workforce MSP (stealth)",
-    bio: "Every company, past a certain size, discovers its data has quietly developed opinions — four systems, four answers, nobody entirely sure which to trust. I'm the founding data hire at a healthcare workforce MSP, which mostly meant being handed exactly that. I build production Microsoft Fabric Medallion lakehouses — bronze-to-gold plumbing that gets four vendor systems to agree on a single number, the kind an executive can take into a board meeting without a disclaimer.",
+    bio: "I reconcile four vendor systems into one source of truth — currently at a healthcare workforce MSP, where the board-deck number used to depend on who made the spreadsheet.",
     email: "hummaam@hummaamqaasim.com",
   },
 
