@@ -48,7 +48,7 @@ export function SideProjectCard({ project }: { project: Project }) {
           </Link>
         </h3>
 
-        <p className="mt-2 text-[12.5px] leading-[1.55] text-(--color-paper)/60">
+        <p className="mt-2 text-[14px] leading-[1.55] text-(--color-paper)/65">
           {project.description}
         </p>
 
@@ -57,7 +57,7 @@ export function SideProjectCard({ project }: { project: Project }) {
             {project.tech.map((t) => (
               <li
                 key={t}
-                className="mono rounded px-2 py-0.5 text-[9.5px] tracking-wider text-(--color-espresso)"
+                className="mono rounded px-2.5 py-1 text-[10px] tracking-wider text-(--color-espresso)"
                 style={{ backgroundColor: "var(--color-olive)" }}
               >
                 {t}

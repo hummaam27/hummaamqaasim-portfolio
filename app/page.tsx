@@ -20,7 +20,7 @@ export default async function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="relative pt-20 pb-16 sm:pt-28 lg:pt-32">
+      <section className="relative pt-20 pb-8 sm:pt-28 lg:pt-32">
         <Container width="wide">
           {/* Masthead */}
           <div className="flex items-center gap-3">
@@ -50,7 +50,7 @@ export default async function Home() {
           {/* Portrait + bio + actions — two-column on lg, stacked on mobile */}
           <div className="mt-14 grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start lg:gap-12">
             {/* Profile portrait — large round, terracotta ring, soft shadow */}
-            <div className="relative h-[180px] w-[180px] shrink-0 sm:h-[200px] sm:w-[200px]">
+            <div className="relative mx-auto h-[180px] w-[180px] shrink-0 sm:h-[200px] sm:w-[200px] lg:mx-0">
               <span
                 aria-hidden
                 className="absolute -inset-2 rounded-full"
@@ -134,7 +134,7 @@ export default async function Home() {
         <Container width="wide">
           <SectionLabel>Selected work</SectionLabel>
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             {caseStudies.map((p, i) => (
               <ProjectCard key={p.slug} project={p} index={i + 1} />
             ))}
@@ -157,7 +157,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {sideProjects.map((p) => (
               <SideProjectCard key={p.slug} project={p} />
             ))}

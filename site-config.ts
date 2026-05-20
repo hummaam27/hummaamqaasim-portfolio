@@ -11,7 +11,7 @@ export const siteConfig = {
     location: "Annapolis, Maryland",
     role: "Analytics Engineer",
     company: "Healthcare workforce MSP (stealth)",
-    bio: "I architect production Microsoft Fabric Medallion lakehouses — bronze ingestion across REST APIs, custom-report APIs, SFTP feeds, and live-shortcut sync; silver canonicalization; gold Kimball star schemas; governed Power BI semantic models with Row-Level Security on top. Currently the founding data hire at a healthcare workforce MSP, where the platform unifies four Vendor Management Systems into one trusted source of truth for executive reporting.",
+    bio: "Founding data hire at a healthcare workforce MSP. I architect production Microsoft Fabric Medallion lakehouses — four vendor systems reconciled into one source of truth, feeding 30+ governed Power BI reports.",
     email: "hummaam@hummaamqaasim.com",
   },
 
