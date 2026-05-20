@@ -139,13 +139,20 @@ export default async function Home() {
       {/* Side projects — open-source experiments, secondary tier.
           Full-bleed paper-3 band + olive accent sets it apart as a zone. */}
       <section
-        className="mt-20 border-y bg-(--color-paper-3) pt-16 pb-20"
-        style={{ borderColor: "var(--color-rule)" }}
+        className="mt-20 border-y-2 bg-(--color-paper-3) pt-16 pb-20"
+        style={{ borderColor: "var(--color-olive)" }}
       >
         <Container width="standard">
-          <p className="mono mb-6 text-[11px] tracking-[0.16em] text-(--color-olive)">
-            — side projects
-          </p>
+          <div className="mb-7 flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              className="block h-[3px] w-10"
+              style={{ backgroundColor: "var(--color-olive)" }}
+            />
+            <p className="mono text-[11px] tracking-[0.18em] text-(--color-olive-deep) uppercase">
+              Side projects
+            </p>
+          </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             {sideProjects.map((p) => (

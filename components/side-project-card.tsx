@@ -34,7 +34,7 @@ export function SideProjectCard({ project }: { project: Project }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${project.title} source on GitHub`}
-            className="absolute top-4 right-4 z-10 text-(--color-ink-faint) transition-colors hover:text-(--color-olive)"
+            className="absolute top-4 right-4 z-10 text-(--color-olive) transition-colors hover:text-(--color-olive-deep)"
           >
             <GithubIcon className="h-[15px] w-[15px]" />
           </a>
@@ -58,7 +58,7 @@ export function SideProjectCard({ project }: { project: Project }) {
             {project.tech.map((t) => (
               <li
                 key={t}
-                className="mono rounded px-1.5 py-0.5 text-[9.5px] tracking-wider text-(--color-ink-faint)"
+                className="mono rounded px-1.5 py-0.5 text-[9.5px] tracking-wider text-(--color-olive-deep)"
                 style={{ backgroundColor: "var(--color-tint)" }}
               >
                 {t}
