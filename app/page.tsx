@@ -35,7 +35,7 @@ export default async function Home() {
           </div>
 
           {/* Name — Fraunces display, oversized and tight */}
-          <h1 className="mt-7 font-display text-[52px] leading-[0.9] tracking-[-0.04em] text-(--color-espresso) sm:text-[78px] lg:text-[94px]">
+          <h1 className="mt-7 font-display text-[52px] leading-[0.9] tracking-[-0.04em] text-(--color-ink) sm:text-[78px] lg:text-[94px]">
             {siteConfig.author.name}
           </h1>
 
@@ -134,9 +134,9 @@ export default async function Home() {
         </Container>
       </section>
 
-      {/* Side projects — full tonal flip: dark espresso zone, cream text,
-          olive accents. Flows straight into the espresso footer. */}
-      <section className="mt-24 bg-(--color-espresso) pt-20 pb-24">
+      {/* Side projects — warm sage band, olive accents, cream cards.
+          Flows into the deeper-sage footer. */}
+      <section className="mt-24 bg-(--color-sage) pt-20 pb-24">
         <Container width="standard">
           <div className="mb-8 flex items-center gap-3">
             <span
@@ -144,7 +144,7 @@ export default async function Home() {
               className="block h-[3px] w-10"
               style={{ backgroundColor: "var(--color-olive)" }}
             />
-            <p className="mono text-[11px] tracking-[0.18em] text-(--color-olive) uppercase">
+            <p className="mono text-[11px] tracking-[0.18em] text-(--color-olive-deep) uppercase">
               Side projects
             </p>
           </div>

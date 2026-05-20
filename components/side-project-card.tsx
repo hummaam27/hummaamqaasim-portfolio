@@ -3,8 +3,8 @@ import Link from "next/link";
 import { GithubIcon } from "@/components/brand-icons";
 import type { Project } from "@/types";
 
-/** Compact side-project card — cream card on the dark espresso section.
- *  Espresso text, olive accents, screenshot banner, filled olive tags. */
+/** Compact side-project card — cream card on the warm sage section.
+ *  Dark ink text, olive accents, screenshot banner, filled olive tags. */
 export function SideProjectCard({ project }: { project: Project }) {
   return (
     <div
@@ -42,13 +42,13 @@ export function SideProjectCard({ project }: { project: Project }) {
         <h3 className="pr-7 font-display-mid text-[18px] leading-tight tracking-[-0.01em] text-(--color-olive-deep)">
           <Link
             href={`/projects/${project.slug}`}
-            className="transition-colors after:absolute after:inset-0 group-hover:text-(--color-espresso)"
+            className="transition-colors after:absolute after:inset-0 group-hover:text-(--color-ink)"
           >
             {project.title}
           </Link>
         </h3>
 
-        <p className="mt-2 text-[14px] leading-[1.55] text-(--color-espresso)">
+        <p className="mt-2 text-[14px] leading-[1.55] text-(--color-ink)">
           {project.description}
         </p>
 
@@ -57,7 +57,7 @@ export function SideProjectCard({ project }: { project: Project }) {
             {project.tech.map((t) => (
               <li
                 key={t}
-                className="mono rounded px-2.5 py-1 text-[10px] tracking-wider text-(--color-espresso)"
+                className="mono rounded px-2.5 py-1 text-[10px] tracking-wider text-(--color-ink)"
                 style={{ backgroundColor: "var(--color-olive)" }}
               >
                 {t}
