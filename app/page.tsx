@@ -126,9 +126,9 @@ export default async function Home() {
         <Container width="wide">
           <SectionLabel>Selected work</SectionLabel>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            {caseStudies.map((p, i) => (
-              <ProjectCard key={p.slug} project={p} index={i + 1} />
+          <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
+            {caseStudies.map((p) => (
+              <ProjectCard key={p.slug} project={p} />
             ))}
           </div>
         </Container>
