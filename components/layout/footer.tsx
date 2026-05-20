@@ -5,8 +5,8 @@ export function Footer() {
   const city = siteConfig.author.location.split(",")[0].toUpperCase();
 
   return (
-    <footer className="mt-32 bg-(--color-espresso)">
-      <div className="mx-auto flex max-w-5xl items-center justify-center gap-3 px-6 py-10 sm:px-8">
+    <footer className="bg-(--color-espresso)">
+      <div className="mx-auto flex max-w-5xl items-center justify-center gap-3 px-6 py-12 sm:px-8">
         <span
           aria-hidden="true"
           className="block h-1 w-1 rounded-full"

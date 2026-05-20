@@ -78,7 +78,7 @@ export default async function Home() {
             </div>
 
             <div className="min-w-0">
-              <p className="text-[15px] leading-[1.7] text-(--color-ink-muted) sm:text-[16px]">
+              <p className="text-[17px] leading-[1.6] text-(--color-ink) sm:text-[18px]">
                 {siteConfig.author.bio}
               </p>
 
@@ -123,12 +123,18 @@ export default async function Home() {
         </Container>
       </section>
 
+      {/* Full-bleed terracotta divider — hard break between hero and work */}
+      <div
+        aria-hidden="true"
+        className="h-[3px] w-full bg-(--color-terracotta)"
+      />
+
       {/* Selected work — featured case studies */}
       <section>
         <Container width="wide">
           <SectionLabel>Selected work</SectionLabel>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2">
             {caseStudies.map((p, i) => (
               <ProjectCard key={p.slug} project={p} index={i + 1} />
             ))}
@@ -136,25 +142,22 @@ export default async function Home() {
         </Container>
       </section>
 
-      {/* Side projects — open-source experiments, secondary tier.
-          Full-bleed paper-3 band + olive accent sets it apart as a zone. */}
-      <section
-        className="mt-20 border-y-2 bg-(--color-paper-3) pt-16 pb-20"
-        style={{ borderColor: "var(--color-olive)" }}
-      >
+      {/* Side projects — full tonal flip: dark espresso zone, cream text,
+          olive accents. Flows straight into the espresso footer. */}
+      <section className="mt-24 bg-(--color-espresso) pt-20 pb-24">
         <Container width="standard">
-          <div className="mb-7 flex items-center gap-3">
+          <div className="mb-8 flex items-center gap-3">
             <span
               aria-hidden="true"
               className="block h-[3px] w-10"
               style={{ backgroundColor: "var(--color-olive)" }}
             />
-            <p className="mono text-[11px] tracking-[0.18em] text-(--color-olive-deep) uppercase">
+            <p className="mono text-[11px] tracking-[0.18em] text-(--color-olive) uppercase">
               Side projects
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             {sideProjects.map((p) => (
               <SideProjectCard key={p.slug} project={p} />
             ))}
