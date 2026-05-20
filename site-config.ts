@@ -11,7 +11,7 @@ export const siteConfig = {
     location: "Annapolis, Maryland",
     role: "Analytics Engineer",
     company: "Healthcare workforce MSP (stealth)",
-    bio: "I build data platforms from scratch — the kind where every source tells the same story and the board-deck number carries no asterisk. Currently at a healthcare workforce MSP, where it used to depend on who made the spreadsheet.",
+    bio: "Founding data hire at a healthcare staffing MSP. Microsoft Fabric. Medallion architecture. Power BI. Reads xmla.json files for fun.",
     email: "hummaam@hummaamqaasim.com",
   },
 
