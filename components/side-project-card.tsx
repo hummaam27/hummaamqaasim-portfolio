@@ -3,18 +3,18 @@ import Link from "next/link";
 import { GithubIcon } from "@/components/brand-icons";
 import type { Project } from "@/types";
 
-/** Compact side-project card — sits on the dark espresso section.
- *  Cream text, olive accents, screenshot banner, filled olive tags. */
+/** Compact side-project card — cream card on the dark espresso section.
+ *  Espresso text, olive accents, screenshot banner, filled olive tags. */
 export function SideProjectCard({ project }: { project: Project }) {
   return (
     <div
-      className="group relative flex flex-col overflow-hidden rounded-lg border transition-colors duration-200 hover:border-(--color-olive)"
-      style={{ borderColor: "rgba(245, 239, 227, 0.16)" }}
+      className="group relative flex flex-col overflow-hidden rounded-lg border bg-(--color-paper-2) transition-colors duration-200 hover:border-(--color-olive)"
+      style={{ borderColor: "var(--color-rule)" }}
     >
       {project.image ? (
         <div
           className="relative aspect-[16/9] w-full border-b"
-          style={{ borderColor: "rgba(245, 239, 227, 0.16)" }}
+          style={{ borderColor: "var(--color-rule)" }}
         >
           <Image
             src={project.image}
@@ -33,22 +33,22 @@ export function SideProjectCard({ project }: { project: Project }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${project.title} source on GitHub`}
-            className="absolute top-5 right-5 z-10 text-(--color-olive) transition-colors hover:text-(--color-paper)"
+            className="absolute top-5 right-5 z-10 text-(--color-olive) transition-colors hover:text-(--color-olive-deep)"
           >
             <GithubIcon className="h-[15px] w-[15px]" />
           </a>
         ) : null}
 
-        <h3 className="pr-7 font-display-mid text-[18px] leading-tight tracking-[-0.01em] text-(--color-paper)">
+        <h3 className="pr-7 font-display-mid text-[18px] leading-tight tracking-[-0.01em] text-(--color-olive-deep)">
           <Link
             href={`/projects/${project.slug}`}
-            className="transition-colors after:absolute after:inset-0 group-hover:text-(--color-olive)"
+            className="transition-colors after:absolute after:inset-0 group-hover:text-(--color-espresso)"
           >
             {project.title}
           </Link>
         </h3>
 
-        <p className="mt-2 text-[14px] leading-[1.55] text-(--color-paper)/65">
+        <p className="mt-2 text-[14px] leading-[1.55] text-(--color-espresso)">
           {project.description}
         </p>
 
