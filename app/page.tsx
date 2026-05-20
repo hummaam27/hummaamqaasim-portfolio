@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Container } from "@/components/layout/container";
 import { SectionLabel } from "@/components/section-label";
 import { ProjectCard } from "@/components/project-card";
+import { SideProjectCard } from "@/components/side-project-card";
 import { getAllProjects } from "@/lib/content";
 import { siteConfig } from "@/site-config";
 
@@ -9,7 +10,12 @@ const RESUME_FILE = "/resume/hummaam-qaasim-resume.pdf";
 
 export default async function Home() {
   const projects = await getAllProjects();
-  const featured = projects.filter((p) => p.featured);
+  const caseStudies = projects.filter(
+    (p) => p.featured && p.type === "case-study",
+  );
+  const sideProjects = projects.filter(
+    (p) => p.featured && p.type === "project",
+  );
 
   return (
     <>
@@ -108,14 +114,29 @@ export default async function Home() {
         </Container>
       </section>
 
-      {/* Selected work */}
-      <section className="pb-16">
+      {/* Selected work — featured case studies */}
+      <section>
         <Container width="wide">
           <SectionLabel>Selected work</SectionLabel>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {featured.map((p) => (
+            {caseStudies.map((p) => (
               <ProjectCard key={p.slug} project={p} />
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Side projects — open-source experiments, secondary tier */}
+      <section className="pt-16 pb-20">
+        <Container width="standard">
+          <p className="mono mb-6 text-[11px] tracking-[0.16em] text-(--color-ink-faint)">
+            — side projects
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {sideProjects.map((p) => (
+              <SideProjectCard key={p.slug} project={p} />
             ))}
           </div>
         </Container>

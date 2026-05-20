@@ -31,6 +31,7 @@ export async function getAllProjects(): Promise<Project[]> {
     description: data.description as string,
     date: data.date as string,
     status: (data.status as Project["status"]) ?? "active",
+    type: (data.type as Project["type"]) ?? "case-study",
     tech: (data.tech as string[]) ?? [],
     github: data.github as string | undefined,
     demo: data.demo as string | undefined,
