@@ -41,9 +41,9 @@ export default async function Home() {
 
           {/* Lead line — the statement that carries the voice */}
           <p className="font-display-mid mt-8 max-w-2xl text-[26px] leading-[1.2] tracking-[-0.02em] text-(--color-espresso) sm:text-[33px]">
-            I build the data platform a company{" "}
+            I build data platforms executives{" "}
             <span className="text-(--color-terracotta)">
-              should have started with.
+              stake their numbers on.
             </span>
           </p>
 
