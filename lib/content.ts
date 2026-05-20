@@ -35,6 +35,7 @@ export async function getAllProjects(): Promise<Project[]> {
     tech: (data.tech as string[]) ?? [],
     github: data.github as string | undefined,
     demo: data.demo as string | undefined,
+    image: data.image as string | undefined,
     featured: (data.featured as boolean | undefined) ?? false,
     order: data.order as number | undefined,
     content,

@@ -14,6 +14,8 @@ export interface Project {
   tech: string[];
   github?: string;
   demo?: string;
+  /** Card thumbnail — path under /public (e.g. "/images/slug.png"). */
+  image?: string;
   featured?: boolean;
   order?: number;
   content: string;
