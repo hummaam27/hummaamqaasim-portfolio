@@ -1,18 +1,9 @@
 import Link from "next/link";
 import type { Project } from "@/types";
 
-const STATUS_LABEL: Record<Project["status"], string> = {
-  active: "Active",
-  shipped: "Shipped",
-  archived: "Archived",
-};
-
 /** Featured case-study card — full terracotta block, cream text.
  *  Flex column so tags pin to the card bottom across an equal-height grid. */
 export function ProjectCard({ project }: { project: Project }) {
-  const year = new Date(project.date).getFullYear();
-  const status = STATUS_LABEL[project.status] ?? project.status;
-
   return (
     <Link
       href={`/projects/${project.slug}`}
@@ -29,10 +20,6 @@ export function ProjectCard({ project }: { project: Project }) {
       <h3 className="pr-9 font-display text-[30px] leading-[1.04] tracking-[-0.03em] text-(--color-paper)">
         {project.title}
       </h3>
-
-      <p className="mono mt-3 text-[10px] tracking-[0.16em] text-(--color-paper)/70">
-        {year} · {status.toUpperCase()}
-      </p>
 
       <p className="mt-4 text-[14px] leading-[1.6] text-(--color-paper)/85">
         {project.description}
