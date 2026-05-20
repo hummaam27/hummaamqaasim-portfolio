@@ -34,7 +34,7 @@ export function SideProjectCard({ project }: { project: Project }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${project.title} source on GitHub`}
-            className="absolute top-4 right-4 z-10 text-(--color-ink-faint) transition-colors hover:text-(--color-terracotta)"
+            className="absolute top-4 right-4 z-10 text-(--color-ink-faint) transition-colors hover:text-(--color-olive)"
           >
             <GithubIcon className="h-[15px] w-[15px]" />
           </a>
@@ -43,7 +43,7 @@ export function SideProjectCard({ project }: { project: Project }) {
         <h3 className="pr-7 font-serif text-[15px] leading-tight tracking-tight text-(--color-ink)">
           <Link
             href={`/projects/${project.slug}`}
-            className="transition-colors after:absolute after:inset-0 group-hover:text-(--color-terracotta-deep)"
+            className="transition-colors after:absolute after:inset-0 group-hover:text-(--color-olive-deep)"
           >
             {project.title}
           </Link>

@@ -35,12 +35,12 @@ export default async function Home() {
           </div>
 
           {/* Name — Fraunces display, oversized and tight */}
-          <h1 className="mt-7 font-display text-[52px] leading-[0.9] tracking-[-0.04em] text-(--color-ink) sm:text-[78px] lg:text-[94px]">
+          <h1 className="mt-7 font-display text-[52px] leading-[0.9] tracking-[-0.04em] text-(--color-espresso) sm:text-[78px] lg:text-[94px]">
             {siteConfig.author.name}
           </h1>
 
           {/* Lead line — the statement that carries the voice */}
-          <p className="font-display-mid mt-8 max-w-2xl text-[26px] leading-[1.2] tracking-[-0.02em] text-(--color-ink) sm:text-[33px]">
+          <p className="font-display-mid mt-8 max-w-2xl text-[26px] leading-[1.2] tracking-[-0.02em] text-(--color-espresso) sm:text-[33px]">
             I build the data platform a company{" "}
             <span className="text-(--color-terracotta)">
               should have started with.
@@ -136,10 +136,14 @@ export default async function Home() {
         </Container>
       </section>
 
-      {/* Side projects — open-source experiments, secondary tier */}
-      <section className="pt-16 pb-20">
+      {/* Side projects — open-source experiments, secondary tier.
+          Full-bleed paper-3 band + olive accent sets it apart as a zone. */}
+      <section
+        className="mt-20 border-y bg-(--color-paper-3) pt-16 pb-20"
+        style={{ borderColor: "var(--color-rule)" }}
+      >
         <Container width="standard">
-          <p className="mono mb-6 text-[11px] tracking-[0.16em] text-(--color-ink-faint)">
+          <p className="mono mb-6 text-[11px] tracking-[0.16em] text-(--color-olive)">
             — side projects
           </p>
 

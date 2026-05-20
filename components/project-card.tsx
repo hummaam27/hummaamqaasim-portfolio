@@ -42,7 +42,7 @@ export function ProjectCard({
         </span>
       </div>
 
-      <h3 className="font-display-mid mt-5 text-[24px] leading-[1.08] tracking-[-0.02em] text-(--color-ink) transition-colors group-hover:text-(--color-terracotta-deep)">
+      <h3 className="font-display-mid mt-5 text-[24px] leading-[1.08] tracking-[-0.02em] text-(--color-espresso) transition-colors group-hover:text-(--color-terracotta-deep)">
         {project.title}
       </h3>
 

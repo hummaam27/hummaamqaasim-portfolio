@@ -18,6 +18,9 @@
   --color-ink-faint: #a39584;
   --color-terracotta: #b95a3a;
   --color-terracotta-deep: #9f4528;
+  --color-olive: #6f6f47;
+  --color-olive-deep: #55562f;
+  --color-espresso: #1c1711;
   --color-rule: rgba(45, 38, 32, 0.12);
   --color-rule-strong: rgba(45, 38, 32, 0.2);
   --color-tint: rgba(45, 38, 32, 0.05);
@@ -134,14 +137,15 @@
     color: var(--color-ink);
   }
 
-  /* Editorial typography defaults — headlines are serif, weight 500 */
+  /* Editorial typography defaults — headlines are serif, weight 500.
+     Headings use espresso (deeper than body ink) for display contrast. */
   h1,
   h2,
   h3,
   h4 {
     font-family: var(--font-serif);
     font-weight: 500;
-    color: var(--color-ink);
+    color: var(--color-espresso);
   }
 
   /* Selection uses warm accent tint, not OS default blue */
@@ -219,7 +223,7 @@
   font-family: var(--font-display, var(--font-serif));
   font-weight: 500;
   letter-spacing: -0.015em;
-  color: var(--color-ink);
+  color: var(--color-espresso);
 }
 
 /* H2 — full section divider. Terracotta number prefix + hairline above the heading. Big serif. */
@@ -230,7 +234,7 @@
   padding-top: 1.1em;
   font-size: 32px;
   line-height: 1.12;
-  color: var(--color-ink);
+  color: var(--color-espresso);
   counter-increment: section;
 }
 .editorial-prose h2::before {
@@ -266,7 +270,7 @@
   line-height: 1.3;
   margin-top: 1.8em;
   margin-bottom: 0.55em;
-  color: var(--color-ink);
+  color: var(--color-espresso);
 }
 
 /* Section counter resets at the article root. */

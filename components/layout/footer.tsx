@@ -13,7 +13,7 @@ export function Footer() {
         <span
           aria-hidden="true"
           className="block h-1 w-1 rounded-full"
-          style={{ backgroundColor: "var(--color-terracotta)" }}
+          style={{ backgroundColor: "var(--color-olive)" }}
         />
         <p className="mono text-[10.5px] tracking-[0.2em] text-(--color-ink-muted)">
           © {year} · {city} · HUMMAAM QAASIM
@@ -21,7 +21,7 @@ export function Footer() {
         <span
           aria-hidden="true"
           className="block h-1 w-1 rounded-full"
-          style={{ backgroundColor: "var(--color-terracotta)" }}
+          style={{ backgroundColor: "var(--color-olive)" }}
         />
       </div>
     </footer>
