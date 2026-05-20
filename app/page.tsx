@@ -39,14 +39,6 @@ export default async function Home() {
             {siteConfig.author.name}
           </h1>
 
-          {/* Lead line — the statement that carries the voice */}
-          <p className="font-display-mid mt-8 max-w-2xl text-[26px] leading-[1.2] tracking-[-0.02em] text-(--color-espresso) sm:text-[33px]">
-            I build data platforms executives{" "}
-            <span className="text-(--color-terracotta)">
-              stake their numbers on.
-            </span>
-          </p>
-
           {/* Portrait + bio + actions — two-column on lg, stacked on mobile */}
           <div className="mt-14 grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start lg:gap-12">
             {/* Profile portrait — large round, terracotta ring, soft shadow */}
