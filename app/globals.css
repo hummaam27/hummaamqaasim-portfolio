@@ -286,6 +286,15 @@
   font-style: italic;
 }
 
+/* Images in case-study bodies — full prose-column width, soft card framing. */
+.editorial-prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--color-rule);
+}
+
 /* Blockquotes render as pull quotes: bigger Fraunces italic, terracotta
    margin rule, ink color (not muted). Reads like a magazine pull-out. */
 .editorial-prose blockquote {

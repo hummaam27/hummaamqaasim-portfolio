@@ -1,0 +1,27 @@
+---
+title: "OmniGoal Tracker"
+slug: "omnigoal-tracker"
+description: "Personal goal-tracking dashboard — fitness, learning, projects, and code practice in one app, with an AI coach that briefs from real data."
+date: "2026-05-07"
+status: "active"
+tech: ["React", "TypeScript", "Vite", "Supabase", "OpenAI", "Fitbit API", "GitHub Actions"]
+github: "https://github.com/hummaam27/omnigoal-tracker"
+featured: true
+order: 4
+---
+
+![OmniGoal Tracker dashboard](/images/omnigoal-tracker.png)
+
+Every January the same goals — get healthier, ship more, level up technically — scattered across half a dozen apps, spreadsheets, and notebooks until the friction killed momentum by February. OmniGoal Tracker is the single dashboard built to stop renting that problem.
+
+## What it does
+
+Ten tabs in one app: a dashboard with an AI-generated daily briefing, learning-stack tracking, a Fitbit-fed body tracker with rolling averages and trend stats, a workout log built around progressive overload, AI-generated SQL and coding challenges scaled to skill level, a quarterly project roadmap, an RSS news aggregator, anomaly alerts on health and progress data, and a live OpenAI cost tracker.
+
+The AI coach runs on OpenAI `gpt-5-mini` and reads across every tracker — its daily briefings and weekly reports are grounded in the actual data, not generic advice.
+
+## Key decisions
+
+Cloud sync runs through Supabase Postgres, with a localStorage fallback when no Supabase keys are configured. Fitbit health data syncs on its own through a scheduled GitHub Action that refreshes its OAuth tokens automatically — no manual intervention. The news module is kept decoupled from the React core as a separate Python and Streamlit app.
+
+It is a personal tool, and the repo says so plainly: the OpenAI key is currently bundled into the client, it is single-user by design, and cloud sync uploads the full app state on every change. Shipped honest, not shipped polished — open-sourced under MIT as a starting point.
