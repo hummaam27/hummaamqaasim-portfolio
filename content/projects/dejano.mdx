@@ -1,0 +1,25 @@
+---
+title: "déjano"
+slug: "dejano"
+description: "A novelty layer for LLM apps — semantic dedup that stops a daily generator from repeating itself."
+date: "2026-05-10"
+status: "active"
+tech: ["TypeScript", "Hono", "better-sqlite3", "OpenAI Embeddings", "Server-Sent Events"]
+github: "https://github.com/hummaam27/dejano"
+featured: true
+order: 5
+---
+
+![déjano UI](/images/dejano.png)
+
+LLMs are good at producing one good answer and bad at producing thirty different ones in a row. Ask a model for a daily trivia question and within a week half of them are about the pyramids — it has favorites, and it converges on them. déjano is the layer that sits between an app and the LLM and enforces novelty.
+
+## How it works
+
+Three checks, cheapest first. Every candidate is compared against history with Jaccard token overlap — free, no API call. Survivors are embedded, and if cosine similarity to any prior item crosses the threshold the candidate is rejected — this catches the paraphrases the token test misses. A rejected candidate is discarded and the model is asked again, with the rejected attempt added to its do-not-repeat list. The generator gets harder to repeat itself over time, not easier.
+
+## Key decisions
+
+History and embeddings live in a local `better-sqlite3` store, with vectors kept as Float32 BLOBs. The web layer is Hono, streaming each generation attempt over Server-Sent Events so rejections are visible live as they fire. `LLMProvider`, `EmbeddingProvider`, and `Store` are deliberately small interfaces — swappable for Anthropic, Postgres, or local models without touching the dedup logic.
+
+It is built for any product where the same kind of thing has to be produced day after day — daily quiz questions, journal prompts, standup icebreakers — anywhere a repeat would be embarrassing if a user noticed it. MIT licensed.
