@@ -11,7 +11,7 @@ export const siteConfig = {
     location: "Annapolis, Maryland",
     role: "Analytics Engineer",
     company: "Healthcare workforce MSP (stealth)",
-    bio: "I reconcile four vendor systems into one source of truth — currently at a healthcare workforce MSP, where the board-deck number used to depend on who made the spreadsheet.",
+    bio: "I build data platforms from scratch — the kind where every source tells the same story and the board-deck number carries no asterisk. Currently at a healthcare workforce MSP, where it used to depend on who made the spreadsheet.",
     email: "hummaam@hummaamqaasim.com",
   },
 
