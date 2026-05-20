@@ -1,40 +1,56 @@
 import Link from "next/link";
 import type { Project } from "@/types";
 
+const STATUS_LABEL: Record<Project["status"], string> = {
+  active: "Active",
+  shipped: "Shipped",
+  archived: "Archived",
+};
+
+/** Featured case-study card — large, filled, anchored by a terracotta
+ *  index numeral. The premier tier on the home page. */
 export function ProjectCard({
   project,
-  feature = false,
+  index,
 }: {
   project: Project;
-  feature?: boolean;
+  index?: number;
 }) {
+  const year = new Date(project.date).getFullYear();
+  const status = STATUS_LABEL[project.status] ?? project.status;
+
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group relative block rounded-lg border bg-(--color-paper-2) p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-(--color-rule-strong) hover:shadow-[0_6px_24px_-8px_rgba(45,38,32,0.12)]"
+      className="group relative flex flex-col rounded-lg border bg-(--color-paper-2) p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-(--color-rule-strong) hover:shadow-[0_8px_28px_-10px_rgba(45,38,32,0.16)]"
       style={{ borderColor: "var(--color-rule)" }}
     >
-      {/* Hover-revealed arrow */}
-      <span
-        aria-hidden="true"
-        className="absolute top-5 right-5 text-[14px] text-(--color-terracotta) opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-      >
-        ↗
-      </span>
-
-      <div className="pr-8">
-        <h3
-          className={
-            feature
-              ? "font-serif text-[21px] leading-tight tracking-tight text-(--color-ink) transition-colors group-hover:text-(--color-terracotta-deep)"
-              : "font-serif text-[18px] leading-tight tracking-tight text-(--color-ink) transition-colors group-hover:text-(--color-terracotta-deep)"
-          }
+      {/* Index numeral + hover arrow */}
+      <div className="flex items-start justify-between">
+        {index != null ? (
+          <span className="font-display text-[28px] leading-none tracking-[-0.03em] text-(--color-terracotta)">
+            {String(index).padStart(2, "0")}
+          </span>
+        ) : (
+          <span aria-hidden />
+        )}
+        <span
+          aria-hidden="true"
+          className="text-[15px] text-(--color-terracotta) opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
         >
-          {project.title}
-        </h3>
+          ↗
+        </span>
       </div>
 
-      <p className="mt-3 text-[13px] leading-[1.6] text-(--color-ink-muted)">
+      <h3 className="font-display-mid mt-5 text-[24px] leading-[1.08] tracking-[-0.02em] text-(--color-ink) transition-colors group-hover:text-(--color-terracotta-deep)">
+        {project.title}
+      </h3>
+
+      <p className="mono mt-2.5 text-[10px] tracking-[0.14em] text-(--color-ink-faint)">
+        {year} · {status.toUpperCase()}
+      </p>
+
+      <p className="mt-3.5 text-[13.5px] leading-[1.6] text-(--color-ink-muted)">
         {project.description}
       </p>
 

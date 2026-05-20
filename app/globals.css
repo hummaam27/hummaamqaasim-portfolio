@@ -158,6 +158,14 @@
   font-variation-settings: "SOFT" 60, "opsz" 144;
 }
 
+/* Mid optical size — lead lines and card titles (sub-display scale).
+   Lower opsz keeps Fraunces from over-flaring at non-hero sizes. */
+.font-display-mid {
+  font-family: var(--font-display, Charter, Georgia, serif);
+  font-feature-settings: "ss01", "kern";
+  font-variation-settings: "SOFT" 50, "opsz" 64;
+}
+
 /* Figure breakout — diagrams expand beyond the prose column.
    Default: full-bleed against the viewport (mobile, tablet, laptop).
    xl: contained within the prose+sidebar grid so the right-rail TOC

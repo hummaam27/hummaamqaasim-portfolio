@@ -20,26 +20,35 @@ export default async function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="relative pt-24 pb-12 sm:pt-32">
+      <section className="relative pt-20 pb-16 sm:pt-28 lg:pt-32">
         <Container width="wide">
-          <div className="mb-10 flex items-center gap-3">
+          {/* Masthead */}
+          <div className="flex items-center gap-3">
             <span
               aria-hidden="true"
-              className="block h-[2px] w-8"
+              className="block h-[3px] w-10"
               style={{ backgroundColor: "var(--color-terracotta)" }}
             />
             <span className="eyebrow">
-              {siteConfig.author.role} ·{" "}
-              {siteConfig.author.location.split(",")[0]}, MD
+              {siteConfig.author.role} · Annapolis, Maryland
             </span>
           </div>
 
-          <h1 className="font-serif text-[44px] leading-[0.98] tracking-[-0.02em] text-(--color-ink) sm:text-[64px] lg:text-[72px]">
+          {/* Name — Fraunces display, oversized and tight */}
+          <h1 className="mt-7 font-display text-[52px] leading-[0.9] tracking-[-0.04em] text-(--color-ink) sm:text-[78px] lg:text-[94px]">
             {siteConfig.author.name}
           </h1>
 
+          {/* Lead line — the statement that carries the voice */}
+          <p className="font-display-mid mt-8 max-w-2xl text-[26px] leading-[1.2] tracking-[-0.02em] text-(--color-ink) sm:text-[33px]">
+            I build the data platform a company{" "}
+            <span className="text-(--color-terracotta)">
+              should have started with.
+            </span>
+          </p>
+
           {/* Portrait + bio + actions — two-column on lg, stacked on mobile */}
-          <div className="mt-12 grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start lg:gap-12">
+          <div className="mt-14 grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start lg:gap-12">
             {/* Profile portrait — large round, terracotta ring, soft shadow */}
             <div className="relative h-[180px] w-[180px] shrink-0 sm:h-[200px] sm:w-[200px]">
               <span
@@ -69,7 +78,7 @@ export default async function Home() {
             </div>
 
             <div className="min-w-0">
-              <p className="font-serif text-[18px] leading-[1.65] text-(--color-ink) sm:text-[19px]">
+              <p className="text-[15px] leading-[1.7] text-(--color-ink-muted) sm:text-[16px]">
                 {siteConfig.author.bio}
               </p>
 
@@ -120,8 +129,8 @@ export default async function Home() {
           <SectionLabel>Selected work</SectionLabel>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {caseStudies.map((p) => (
-              <ProjectCard key={p.slug} project={p} />
+            {caseStudies.map((p, i) => (
+              <ProjectCard key={p.slug} project={p} index={i + 1} />
             ))}
           </div>
         </Container>
