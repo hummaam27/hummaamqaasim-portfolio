@@ -8,7 +8,9 @@ import { ReconciliationMatrix } from "@/components/diagrams/reconciliation-matri
 import { AIDirectedLoop } from "@/components/diagrams/ai-directed-loop";
 import { IdempotencyStack } from "@/components/diagrams/idempotency-stack";
 import { DedupFlow } from "@/components/diagrams/dedup-flow";
+import { MetricDrift } from "@/components/diagrams/metric-drift";
 import { AtAGlance, Headline, Row } from "@/components/at-a-glance";
+import { MedallionStoryboard, ImanicStoryboard } from "@/components/storyboard";
 
 const rehypePrettyCodeOptions = {
   theme: "rose-pine-dawn",
@@ -24,9 +26,12 @@ const mdxComponents = {
   AIDirectedLoop,
   IdempotencyStack,
   DedupFlow,
+  MetricDrift,
   AtAGlance,
   Headline,
   Row,
+  MedallionStoryboard,
+  ImanicStoryboard,
 };
 
 export function MdxContent({
