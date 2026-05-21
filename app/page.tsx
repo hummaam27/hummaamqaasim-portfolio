@@ -123,10 +123,10 @@ export default async function Home() {
 
       {/* Selected work — featured case studies */}
       <section>
-        <Container width="wide">
+        <Container width="standard">
           <SectionLabel>Selected work</SectionLabel>
 
-          <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
             {caseStudies.map((p) => (
               <ProjectCard key={p.slug} project={p} />
             ))}
@@ -134,17 +134,17 @@ export default async function Home() {
         </Container>
       </section>
 
-      {/* Side projects — warm sage band, olive accents, cream cards.
-          Flows into the deeper-sage footer. */}
-      <section className="mt-24 bg-(--color-sage) pt-20 pb-24">
+      {/* Side projects — teal band, teal accents, cream cards.
+          Flows into the deeper-teal footer. */}
+      <section className="mt-24 bg-(--color-teal-band) pt-20 pb-24">
         <Container width="standard">
           <div className="mb-8 flex items-center gap-3">
             <span
               aria-hidden="true"
               className="block h-[3px] w-10"
-              style={{ backgroundColor: "var(--color-olive)" }}
+              style={{ backgroundColor: "var(--color-teal)" }}
             />
-            <p className="mono text-[11px] tracking-[0.18em] text-(--color-olive-deep) uppercase">
+            <p className="mono text-[11px] tracking-[0.18em] text-(--color-teal-deep) uppercase">
               Side projects
             </p>
           </div>
