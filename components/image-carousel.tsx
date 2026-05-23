@@ -119,3 +119,14 @@ const LLM_COUNCIL_SLIDES: Slide[] = [
 export function LLMCouncilGallery() {
   return <ImageCarousel slides={LLM_COUNCIL_SLIDES} />;
 }
+
+const IMANIC_SLIDES: Slide[] = [
+  { src: "/images/imanic-homepage.png", alt: "Student dashboard with course cards and daily progress" },
+  { src: "/images/imanic-course.png", alt: "Biology course view with units, modules, and lesson list" },
+  { src: "/images/imanic-reading.png", alt: "Interactive reading activity with rich content blocks" },
+  { src: "/images/imanic-quiz.png", alt: "Quiz activity with multiple choice and explanation panel" },
+];
+
+export function ImanicGallery() {
+  return <ImageCarousel slides={IMANIC_SLIDES} />;
+}

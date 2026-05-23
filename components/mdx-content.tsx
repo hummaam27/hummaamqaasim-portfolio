@@ -11,7 +11,7 @@ import { DedupFlow } from "@/components/diagrams/dedup-flow";
 import { MetricDrift } from "@/components/diagrams/metric-drift";
 import { AtAGlance, Headline, Row } from "@/components/at-a-glance";
 import { MedallionStoryboard, ImanicStoryboard } from "@/components/storyboard";
-import { LLMCouncilGallery } from "@/components/image-carousel";
+import { LLMCouncilGallery, ImanicGallery } from "@/components/image-carousel";
 
 const rehypePrettyCodeOptions = {
   theme: "rose-pine-dawn",
@@ -34,6 +34,7 @@ const mdxComponents = {
   MedallionStoryboard,
   ImanicStoryboard,
   LLMCouncilGallery,
+  ImanicGallery,
 };
 
 export function MdxContent({
