@@ -1,141 +1,83 @@
 ---
 title: "Imanic: A Year of AI-Directed Engineering"
 slug: "imanic"
-description: "Solo-built edtech platform for homeschool families. Eleven months of evenings and weekends. The case study in directing AI to build production-grade software."
+description: "Solo-built edtech platform for homeschool families. Eleven months of evenings and weekends. A case study in directing AI to build production-grade software."
 date: "2025-12-15"
 status: "active"
 type: "case-study"
-tech: ["NestJS", "Next.js", "PostgreSQL", "Directus", "OpenAI Embeddings", "Stripe", "Mux", "Render", "Claude Code"]
+tech: ["NestJS", "Next.js", "PostgreSQL", "Directus", "Stripe", "Mux", "Render", "Claude Code"]
 featured: true
 order: 3
 ---
 
-## What It Is
+<ImanicStoryboard />
 
-Imanic is a gamified edtech platform built for homeschool families. Courses, lessons, a daily quiz, an XP and badge economy, parent and child accounts where parents oversee their kids' progress, Stripe subscriptions, signed video playback. Solo build, launching mid-July 2026.
+## What I Built
 
-Eleven months from start to feature-complete: February through December 2025, evenings and weekends, while holding down a founding-engineer role at a healthcare staffing MSP. Around 900 source files, TypeScript-strict, built across NestJS 11, Next.js 15, PostgreSQL via Directus, Stripe, Mux, Sentry, Render, and Cloudflare.
+Imanic is a gamified learning platform for homeschool families. It includes courses, lessons, quizzes, signed video playback, a full XP and badge economy, Stripe subscription billing, and parent-child accounts where parents can actually see how their kids are doing. Launching mid-July 2026.
 
-Here's the part of this story that matters. **I architected this system. I did not write most of the code by hand.** Claude Code wrote the implementations under my direction, on a development workspace separate from production, behind a Git-backed pull-request flow into the deployed environment. My job for eleven months was the senior-engineer job: deciding what to build, how to model the data, where to enforce constraints, what to test, when to say no, and when the AI was about to ship something I'd have to roll back.
+This isn't some simple little app. The backend is a NestJS API (strict TypeScript) running on its own server, handling authentication, authorization, billing, content delivery, the reward engine, and a daily quiz system that just keeps going. The frontend is a separate Next.js 15 / React 19 application. Data lives in PostgreSQL through Directus. Stripe handles payments, Mux serves the signed videos, and Sentry watches for trouble. The whole thing runs on Render behind Cloudflare with a clean Git-backed workflow that keeps development and production completely separate.
 
-This case study is what AI-directed engineering actually looks like at the senior data engineer level, and what I learned building a real product that way.
+I built the entire thing solo over eleven months, evenings and weekends from February through December 2025, while working full-time as a founding analytics engineer. Yes, sleep was optional.
 
-## How This Was Actually Built
+## Why I'm Building This
+
+I hated school. Not learning, I loved learning. Just the way it was delivered. Everything was built for a classroom, not a student.
+
+What's different now is that we finally have the data to do personalization properly. Every click, every skipped lesson, every quiz retry, every moment a student quietly gives up. The problem is that nobody is doing anything useful with it. Collecting that behavior is easy. The hard part is turning it into something useful, modeling it, transforming it, and feeding it back into the experience so the next lesson actually fits the kid sitting in front of it. That's a data problem, and it's one I genuinely want to solve.
+
+## How I Built It
+
+I wanted to treat Claude Code like a very talented but slightly chaotic junior developer, not a magic button.
+
+I did the architecture. I wrote the specs. Claude wrote a lot of the code, but only after I told it exactly what to build and why. Every major feature started with a proper design document. I had written specs for the auth flows, billing system, reward economy, activity pipeline, and security model before any production code was generated.
+
+When I wasn't sure about the best approach, I'd ask Claude for options, think through the trade-offs myself, and make the final call. The big architectural decisions were mine. Many of the smaller ones were collaborative. But every deployment decision? That was on me. No surprises if I could help it.
 
 <AIDirectedLoop />
 
-The pattern across eleven months looked like this. I'd start a feature with a written spec. What the user-facing behavior is, what the data model needs to look like, what the failure modes are, what the test would prove. Claude Code would draft the implementation against the spec, in a feature branch in a development workspace. I'd read the diff, push back on anything that didn't fit the architecture, run the tests, and iterate. When it was right, I'd open a pull request, review the full change set against the rest of the codebase, and merge. The deploy went out from main to production through Render's build pipeline.
+The pattern across eleven months was simple: spec, draft, review, ship. Claude Code would draft an implementation in a feature branch on the dev workspace. I'd read the diff, push back on anything that didn't feel right, run the tests, and iterate. When it was solid, I'd open a PR, review the full change set, and merge to main. The deploy went out through Render's build pipeline. The AI never touched production directly.
 
-This was not vibe coding. The architecture decisions are mine. The schema is mine. The trade-offs are mine. The bugs that made it into the deployed build and had to be rolled back were mine too. Claude Code wrote them, but I approved them, and the lesson is mine. What I gained from the workflow was throughput. What I had to bring to it was judgment, and the discipline of building feedback loops the AI could operate inside.
+The git history tells the real story. Incremental, well-scoped commits with conventional formatting. No giant dumps of code. Feature branches, pull requests, and real code review. The same workflow you'd run with a human teammate, except the teammate is an LLM and the entire review burden sits on you.
 
-The dev workspace and prod workspace separation is the operational ground truth of this whole project. AI-assisted development is fast, and "fast" in production without a safety net is how you end up with a corrupted database at 11 PM on a Tuesday. I never ran AI directly against production. The split is non-negotiable when you're directing an AI tool that will confidently delete things if you ask it to.
+## The Product
 
-## The November Webhook Week
+**Authentication and authorization.** Session-based auth with email verification and Google OAuth. A clean parent-child model where one parent owns multiple student accounts. Authorization guards make sure a parent can only access their own children's data. I even wrote a test that tries to break that boundary on purpose, just to prove it holds.
 
-The strongest engineering lesson I took out of this build came in a single day on the Stripe integration.
+**Billing.** Stripe subscriptions with webhook-driven state management. Seat-based plans where parents can add or remove child accounts. Subscription state lives in its own table as a downstream projection of Stripe's source of truth. The downgrade path, deciding which kids to suspend and in what order, has proper tests.
 
-November 9, 2025. Three commits in rapid succession. The first one fetches data from the Stripe API because the webhook payload arrived incomplete, missing fields the consumer needed. The second adds retry logic and verification on billing customer creation, because the customer object wasn't reliably present when checkout completion fired. The third adds a delay to `subscription.updated`, because the update event was arriving before `subscription.created` had finished writing. Three race conditions, same morning.
+**Content and gamification.** A full course hierarchy with courses, sections, modules, lessons, and activities. A learning events coordinator routes every completion through XP grants, gem rewards, badge checks, and streak tracking in a strict deterministic sequence. Idempotency is enforced at the database level so duplicate submissions are structurally impossible.
 
-What I had thought was true going in: webhooks are at-least-once, the signature verification handles security, and the consumer's job is to apply the event to local state. What turned out to be true: webhooks are at-least-once *and* arrive out of order *and* sometimes carry incomplete payloads *and* race against each other when two related events fire close together. The fix wasn't one fix. It was three different patterns for three different failure modes.
+**Daily quiz.** A scheduled job creates a fresh quiz every day. It uses semantic similarity to avoid repeating questions, with a second check for near-duplicates the first pass might miss. This engine is on its third architecture. The first two taught me a lot about the difference between surface-level and meaning-level deduplication.
 
-- Incomplete payloads: re-fetch the canonical object from the Stripe API before processing.
-- Out-of-order delivery: introduce a small ordering delay on the dependent event.
-- Customer creation race: retry with verification before the dependent path can run.
+**Security.** Rate limiting, CSRF protection, security headers, and careful PII redaction in error logs. There's a full security audit documented in the repo. It's not enterprise-grade, but it's solid for a consumer SaaS at launch.
 
-What's worth saying about this. Claude Code didn't anticipate any of these three failures in the original implementation. The original code was the correct textbook handler. Verify signature, parse event, apply to local state. The race conditions only surfaced once Stripe webhook traffic actually hit it in the deployed environment. That's the part of AI-directed engineering nobody talks about. The AI ships the *common case* well, and your job as the senior is to know which uncommon cases will burn you in production. I knew to look for race conditions on a webhook handler because I'd seen this class of bug before. The AI didn't, because it had never been on call.
+## What Production Taught Me
 
-Ten days later, the same lesson got applied somewhere else entirely. On November 19, I had Claude Code add composite-unique idempotency on the user points table, `(user_id, source, reference_slug)`, and write a backfill script to retrofit reference slugs onto the existing rows. The XP system had been running for three months without database-level idempotency. The Stripe fires had taught me that webhook-driven systems aren't safe at the application layer alone. The constraints have to live in the database. I generalized the lesson before it became a fire on the XP path too.
+The biggest lesson came from the Stripe integration. Three race conditions appeared as soon as real webhook traffic hit the live system.
 
-I want to be honest here. I don't have a commit that says "fix duplicate XP credit." I didn't ship the November fix because XP had already been corrupted. I shipped it because the Stripe fires made it obvious the same class of bug was sitting unexploded inside a different code path. That kind of generalization-before-the-fire is the senior decision the AI doesn't make on its own. It makes the change you direct it to make.
+One webhook arrived missing fields. Another time the customer object wasn't there when the checkout event fired. And a subscription update sometimes arrived before the original create event had finished writing. Three different failure modes, three different fixes. Claude Code's original implementation followed the textbook perfectly for the common case. The AI is great at the happy path. The engineer's job is spotting the uncommon cases that will actually hurt you.
 
-## Three Takes on the Daily Quiz
+Ten days later I applied the same lesson before it became a problem. The XP reward system had been running for months without database-level idempotency. The Stripe fires made it obvious the same class of bug was sitting quietly in another part of the code. I had Claude Code add the proper composite-unique constraints and write a backfill script before it ever became an issue. That kind of pattern recognition, seeing a failure in one place and fixing it elsewhere before it breaks, is something the AI still can't do on its own.
 
-The dedup pipeline is in its third architecture. The git history goes back to August 2025 and reads as three lessons.
+## What I Won't Overclaim
 
-**v1, September 7, 2025. Category rotation plus duplicate detection.** First serious attempt. Rotate through categories, check for exact-match duplicates. Worked until it didn't. Same questions came back with minor wording changes and the duplicate check let them through.
+The test suite is focused, not exhaustive. Auth, billing, activity completion, and rewards are well covered. The daily quiz deduplication engine has been running reliably for months, but it doesn't have unit tests on the similarity logic yet. That's a known gap.
 
-**v2, November 28, 2025. Answer fingerprinting plus progressive temperature.** Hash the answer text, store the hash, reject collisions. Bump the LLM temperature on each retry to encourage variety. This held for a few months. The problem it didn't solve: questions with reworded answers that ask the same thing. *"What year did X happen?"* and *"In what year did X take place?"* hash to different fingerprints but ask the same question. The fingerprint was checking surface form when the duplicate was at the level of meaning.
+The database schema is managed through the CMS layer rather than code-driven migrations. It worked fine for a solo project, but it wouldn't scale to a team.
 
-**v3, April 30, 2026. Semantic embeddings plus Jaccard fallback plus subtopic LRU plus rescue threshold.** This is the version running today. A NestJS cron at 12:01 AM Eastern generates a candidate, embeds it with `text-embedding-3-small` at 512 dimensions, rejects on cosine similarity at or above 0.85 against history. A token-set Jaccard check at 0.35 catches near-duplicates with different surface forms that the embedding still missed. A 60-day cooldown picks from the five least-recently-used subtopics to keep topical variety. On the final retry of the day, the Jaccard threshold relaxes to 0.6, a rescue threshold I added preemptively. The reasoning was that v2's rejection rate was already climbing as history grew, and v3's stricter semantic check would push it higher. I wanted strict-by-default with operational headroom on the bad day, not a stuck cron.
+Rate limiting is appropriate for launch scale. It's not distributed.
 
-<DedupFlow />
+I used the AI for implementation decisions, not just code. When I didn't know the best pattern for something, I asked, evaluated the options, and decided. I'm not pretending I had every answer before I prompted. What I did have was the judgment to review what came back, the discipline to write specs first, and the willingness to throw away output that didn't hold up.
 
-The v3 rollout came with a backfill. Every existing quiz had to be re-embedded retroactively before the dedup engine could compare new candidates against history. I wrote a one-shot script for that and threw it away after the migration ran. That kind of operational detail doesn't show up in product changelogs, but it absolutely shows up in real engineering. The schema change isn't done when the new table is shaped right. It's done when the historical data has been migrated into the new shape.
+## What I'd Do Differently
 
-What I'd refactor next. The embeddings live as a JSON column on the `daily_quiz` Directus collection. Similarity search is an in-memory linear scan. Fine at this scale, a real bottleneck before scaling. If I were starting today against pgvector, I'd use it.
+I'd write the database schema in code from day one. Managing it through the CMS layer was fast, but it left me with no migration history and no clear record of changes. On a team, that would be painful.
 
-## The Index Strategy and the Idempotent Reward Ledger
+I'd invest in deduplication tests earlier. The daily quiz engine went through three full architectures, and I mostly validated it by watching the output instead of writing proper assertions. That works when you're the only person looking, but it's not a habit I'd repeat.
 
-This is the paired story I'd lead with in a data engineering interview, because the indexes and the idempotency layer are the same story told from two sides. One is the access pattern, the other is the schema that supports it.
-
-**Indexes designed around the access patterns, not bolted on after profiling.** Every index in the system exists because a specific query asks for it.
-
-- A covering index on `user_points (user_id, source, date_created)` supports two of the hottest paths in the system. The XP idempotency lookup before a grant, and the history scan that backs the daily-quiz dedup engine. Both run as index-only reads.
-- A composite UNIQUE on `user_points (user_id, source, reference_slug)` is what makes the idempotency story enforceable at the database layer instead of in application code. The constraint prevents the same XP grant from being written twice. Postgres rejects it before the application ever sees the duplicate.
-- A leaderboard index on `game_scores (game_slug, high_score DESC)` supports top-N ordering without a sort step.
-- Partial indexes with `WHERE` clauses on the selective columns to cut write amplification.
-- A filtered block index keyed only on `blocked_flag = true` so the moderation path stays fast even as the user table grows.
-
-The index design happened in a single planning session. I worked through every read and write path in the system, sketched what each query would need, and only then had Claude Code write the migration. The order matters. Indexes designed against actual queries are dramatically different from indexes generated by an AI looking at a schema in isolation.
-
-**The reward coordinator is one entry point with three layers of idempotency.** Every event that grants XP, gems, badges, or streak credit flows through `LearningEventsService`. The coordinator calls activity-attempt logging, the reward engine, the gem engine, the badge engine, and the user-points ledger sequentially. One entry point, deterministic call order, every grant traceable.
-
-Idempotency lives in three layers, all enforced in Postgres rather than in application code.
-
-1. `activity_attempts.submission_id` is a UNIQUE index. Duplicate submissions raise Postgres error 23505, which the service catches and returns the original record. The retry sees the same answer it would have seen on first write.
-2. `user_points` has the composite UNIQUE on `(user_id, source, reference_slug)`. Same constraint, same access pattern as the read index.
-3. An `idempotency_records` table keyed on `(user_id, idempotency_key, operation_type)` catches the operations that don't have a natural composite key.
-
-A unit test double-fires the same idempotency key and asserts the gem-award path runs exactly once. Replay-as-no-op is a property of the system, not a hope.
-
-<IdempotencyStack />
-
-**The honest gap, and the trade-off framing that goes with it.** The grant is not transactional. There's no `BEGIN`/`COMMIT` wrapping the whole sequence. Everything routes through the Directus SDK over REST, so the data layer is a remote service, not a Postgres connection I can open a transaction on. If gems succeed and XP fails, the user sees a partial grant. The recovery story is replay via the idempotency key, not rollback.
-
-In a design review, this is the question I'd expect. *"Why no transaction?"* My answer: I picked durability of the audit trail (every step writes its own row before the next step runs) over atomicity of the user-facing state. A partial grant is recoverable by retrying the same idempotency key. The layers that already succeeded short-circuit, the layers that failed re-execute. An atomic version would require either pulling the data layer into Postgres directly (breaking the Directus pattern the rest of the system uses) or implementing a saga with compensating transactions (a much bigger lift for a single-developer launch). For a consumer learning app where reward state can briefly drift and self-heal on retry, the current shape is the right scope. For a fintech ledger, it wouldn't be.
-
-## Stripe Webhooks After the Fires
-
-After the November fires, the webhook handler looks like this. Signatures verified server-side. Every event lands in a `stripe_webhook_events` table keyed on `stripe_event_id` UNIQUE. Check-before-process: if the event ID already exists, return early. Stripe retries at-least-once delivery, and the table makes the consumer effectively-once.
-
-Subscription state lives in a dedicated `billing_subscriptions` table. Status, plan, seat count, period start and end, `cancel_at_period_end`, the Stripe price ID. State transitions are driven entirely by webhooks, which means subscription state in our database is always a downstream projection of Stripe's source of truth. Seat downgrade is the one path with non-trivial billing-to-domain coupling. When a parent reduces their seat count, the system has to pick which child accounts to suspend, in what order, with what notification. I wrote tests for that path before merging the path itself.
-
-## Parent and Child Authorization
-
-Designed up front. Didn't have to rebuild.
-
-The data model is a self-foreign-key on `directus_users.parent_account_id`. One parent, many children. A `SubjectResolutionGuard` reads the `subjectUserId` from the request, confirms the child belongs to the authenticated parent, and only then issues the privileged query. A unit test exercises the cross-parent attack: a parent attempting to access a non-child throws `ForbiddenException`.
-
-Authorization is enforced in code, not in Postgres row-level security. The data layer sits behind a static admin token, so the database itself doesn't know which user a request belongs to. The guard knows. That's an honest architecture, not a deep one. Anyone who tells you they have RLS-everywhere on a multi-tenant app probably doesn't.
-
-## Edge Security and Observability
-
-Two pieces worth flagging, because they show up in operational conversations more often than people expect.
-
-The preview guard is fail-closed by default. Missing `PREVIEW_KEY` environment variable causes all traffic to rewrite to a coming-soon page. There's an explicit disabled escape hatch when I want to bypass it intentionally, but the default behavior is "no key, no traffic." That's the kind of decision you only make once you've watched a "temporarily disabled" flag ship to production and sit there for a year. HSTS is configured at three layers (Next config, Next middleware, Nest main) for defense in depth.
-
-Sentry observability has a real noise budget. PII redaction in breadcrumbs strips password, token, secret, and authorization keys before they reach the wire. Throttler exceptions are filtered so 429s don't pollute the alert feed. Profiling falls back gracefully when native binaries aren't available for the runtime. The whole module is prod-only gated to preserve free-tier quota. None of that is exotic, but it's the kind of thing that gets skipped on solo projects, and it shows the difference between "I built it" and "I'm prepared to run it."
-
-## What I'm Not Going to Overclaim
-
-Three things I want to call out, because the right answer in a portfolio is to name what's true and name what isn't.
-
-Auth is hard-validated at one boundary, not at every layer. Requests go from the Next.js API route to the NestJS controller, which verifies the JWT signature against a Redis session. From NestJS to Directus, the system uses a static admin token, so there's no per-user context at the database layer. Subject-level authorization is enforced by the guard before the privileged query runs, not by the database.
-
-Rate limiting is per-worker, in-memory. It's a `Map` in process memory, 60 requests per minute per IP on `/api/*`. Lost on restart. Not distributed across workers. Fine for launch traffic, not production-grade.
-
-The dedup engine is essentially untested. There's a security spec for the surrounding endpoints, but zero unit tests for the cosine-similarity path, the Jaccard fallback, or the subtopic cooldown. The system is verified by manual test runs and observed daily-quiz output over time, not by a test harness. That's a known debt, and it's on me as the architect. Claude Code would have written the tests if I'd directed it to. I didn't, and that's the gap.
-
-The honest framing for the system as a whole: single-instance scale today. If traffic warranted it, the next moves are pgvector for the embedding store, Redis-backed rate limiting, and a transactional outbox pattern for the reward grants. I know what I'd build next. I haven't built it yet because the current scale doesn't justify it.
-
-## The Through-Line
-
-Layered architecture, idempotency, schema design as a contract, indexes designed around access patterns instead of bolted on later. These aren't data-specific patterns, and they aren't AI-specific patterns either. They're the patterns that show up wherever a system has to keep working when nobody is looking. The same composite-unique constraint that enforces idempotency on a reward ledger has the same shape as the natural-key MERGE condition I write against bronze tables in a Microsoft Fabric medallion. The same exactly-once posture I bring to a Delta MERGE on a vendor that loves to send the same payload twice is what makes a Stripe webhook handler effectively-once after a hard week of debugging it.
-
-I built Imanic the way I think modern senior data engineering will look in 2027 and beyond. AI as the implementation throughput, the human as the architect and the judge. Eleven months of evenings and weekends to build a multi-tenant production-grade SaaS to feature-complete while holding down a day job is not the same as eleven months of writing every keystroke yourself, and I'm not going to pretend otherwise. The vocabulary of the work changes (*direct, review, push back, validate, ship* instead of *type, debug, refactor, type some more*). The instincts don't. The judgment doesn't. The accountability when something breaks at 11 PM doesn't.
-
-This is what I bring to an Analytics Engineer role: the architecture instincts I built shipping a multi-source Microsoft Fabric medallion at my day job, the systems-engineering instincts I built shipping a multi-tenant SaaS in my evenings, and the AI-directed throughput pattern that made the second one possible without sacrificing the first.
+I'd also add end-to-end tests on the billing flows much sooner. The Stripe webhook issues were caught quickly because I was watching production closely, but "the developer is watching" is not a real monitoring strategy. Automated tests on the critical billing paths would have caught those race conditions in staging instead of live.
 
 ## The Stack
 
-NestJS 11 (TypeScript-strict) on Node 22, Next.js 15 / React 19 frontend, Directus on PostgreSQL, Stripe for billing, Mux for signed video, Sentry for errors, Render and Cloudflare for infrastructure, Claude Code for AI-assisted implementation, Git-backed PR flow, dev workspace separated from prod. Around 900 source files, solo build, eleven months from February through December 2025.
+NestJS 11 with strict TypeScript on Node 22, Next.js 15 and React 19, Directus on PostgreSQL, Redis for sessions, Stripe for billing, Mux for signed video, Sentry for observability, Render and Cloudflare for infrastructure, and Claude Code for AI-directed implementation. Everything runs with a Git-backed PR workflow and clear separation between dev and production workspaces. Solo build, eleven months.

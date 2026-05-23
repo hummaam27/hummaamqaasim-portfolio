@@ -26,13 +26,13 @@ export function ProjectCard({ project }: { project: Project }) {
           card reads as one framed unit, not a diagram floating on the page */}
       {Banner ? (
         <div className="p-3 pb-0">
-          <div className="aspect-[16/9] w-full overflow-hidden rounded-md bg-(--color-paper-2)">
+          <div className="aspect-[16/9] w-full overflow-hidden rounded-md bg-(--color-paper-2) md:aspect-[2.4/1]">
             <Banner />
           </div>
         </div>
       ) : null}
 
-      <div className="relative flex flex-1 flex-col px-7 pt-5 pb-7">
+      <div className="relative flex flex-1 flex-col px-7 pt-5 pb-7 md:pt-4 md:pb-5">
         {/* Hover arrow */}
         <span
           aria-hidden="true"
@@ -49,19 +49,6 @@ export function ProjectCard({ project }: { project: Project }) {
           {project.description}
         </p>
 
-        {project.tech.length > 0 ? (
-          <ul className="mt-auto flex flex-wrap gap-1.5 pt-6">
-            {project.tech.map((t) => (
-              <li
-                key={t}
-                className="mono rounded px-2 py-1 text-[10px] tracking-wider text-(--color-paper)/95"
-                style={{ backgroundColor: "var(--color-terracotta-deep)" }}
-              >
-                {t}
-              </li>
-            ))}
-          </ul>
-        ) : null}
       </div>
     </Link>
   );

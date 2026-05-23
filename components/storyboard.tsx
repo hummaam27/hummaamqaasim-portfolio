@@ -35,9 +35,9 @@ function Storyboard({ kicker, beats }: { kicker: string; beats: Beat[] }) {
         {beats.map((beat, i) => (
           <div
             key={beat.kicker}
-            className="flex flex-col rounded-lg border border-(--color-rule) bg-(--color-paper-2) p-5 sm:rounded-none sm:border-0"
+            className="flex flex-col rounded-lg border border-(--color-rule) bg-(--color-paper-2) p-4 sm:rounded-none sm:border-0 xl:p-4"
           >
-            <div className="mb-3 flex items-center gap-2.5">
+            <div className="mb-2 flex items-center gap-2.5">
               <span className="mono text-[11px] font-semibold tabular-nums text-(--color-terracotta)">
                 {String(i + 1).padStart(2, "0")}
               </span>
@@ -48,17 +48,17 @@ function Storyboard({ kicker, beats }: { kicker: string; beats: Beat[] }) {
               />
             </div>
 
-            <div className="mb-4 h-[88px] rounded-md bg-(--color-paper-3) p-2 sm:h-[112px]">
+            <div className="mb-3 h-[88px] rounded-md bg-(--color-paper-3) p-2 sm:h-[96px]">
               <beat.Visual />
             </div>
 
             <p className="mono text-[10px] tracking-[0.2em] uppercase text-(--color-ink-muted)">
               {beat.kicker}
             </p>
-            <h3 className="mt-1.5 font-display-mid text-[19px] leading-[1.15] tracking-[-0.01em] text-(--color-ink)">
+            <h3 className="mt-1 font-display-mid text-[18px] leading-[1.15] tracking-[-0.01em] text-(--color-ink)">
               {beat.headline}
             </h3>
-            <p className="mt-2 font-serif text-[13.5px] leading-[1.5] text-(--color-ink-muted)">
+            <p className="mt-1.5 font-serif text-[12.5px] leading-[1.45] text-(--color-ink-muted)">
               {beat.detail}
             </p>
           </div>
@@ -311,20 +311,20 @@ export function MedallionStoryboard() {
 /** Beat 1 — the architect directs, the AI writes. */
 function DirectVisual() {
   return (
-    <svg viewBox="0 0 232 140" className="h-full w-full" aria-hidden="true">
+    <svg viewBox="0 0 232 120" className="h-full w-full" aria-hidden="true">
       {/* Architect node */}
       <circle
         cx={62}
-        cy={56}
-        r={30}
+        cy={40}
+        r={24}
         fill="var(--color-terracotta)"
         stroke="var(--color-terracotta-deep)"
         strokeWidth={1.2}
       />
       <text
         x={62}
-        y={61}
-        fontSize={14}
+        y={44}
+        fontSize={12}
         fontWeight={700}
         fill="var(--color-paper)"
         textAnchor="middle"
@@ -334,8 +334,8 @@ function DirectVisual() {
       </text>
       <text
         x={62}
-        y={104}
-        fontSize={9.5}
+        y={80}
+        fontSize={8.5}
         letterSpacing={1.6}
         fill="var(--color-ink-muted)"
         textAnchor="middle"
@@ -348,16 +348,16 @@ function DirectVisual() {
       {/* AI node */}
       <circle
         cx={170}
-        cy={56}
-        r={26}
+        cy={40}
+        r={20}
         fill="var(--color-ink-muted)"
         stroke="var(--color-ink)"
         strokeWidth={1.2}
       />
       <text
         x={170}
-        y={61}
-        fontSize={13}
+        y={44}
+        fontSize={11}
         fontWeight={700}
         fill="var(--color-paper)"
         textAnchor="middle"
@@ -367,8 +367,8 @@ function DirectVisual() {
       </text>
       <text
         x={170}
-        y={104}
-        fontSize={9.5}
+        y={80}
+        fontSize={8.5}
         letterSpacing={1.6}
         fill="var(--color-ink-muted)"
         textAnchor="middle"
@@ -379,12 +379,12 @@ function DirectVisual() {
       </text>
 
       {/* directs → */}
-      <line x1={94} y1={47} x2={140} y2={47} stroke="var(--color-ink)" strokeWidth={1.1} />
-      <polygon points="140,43 140,51 147,47" fill="var(--color-ink)" />
+      <line x1={88} y1={32} x2={146} y2={32} stroke="var(--color-ink)" strokeWidth={1.1} />
+      <polygon points="146,28 146,36 153,32" fill="var(--color-ink)" />
       <text
         x={117}
-        y={39}
-        fontSize={10}
+        y={25}
+        fontSize={9}
         fill="var(--color-ink-muted)"
         textAnchor="middle"
         fontStyle="italic"
@@ -395,19 +395,19 @@ function DirectVisual() {
 
       {/* ← review */}
       <line
-        x1={146}
-        y1={68}
-        x2={97}
-        y2={68}
+        x1={148}
+        y1={50}
+        x2={91}
+        y2={50}
         stroke="var(--color-terracotta)"
         strokeWidth={1.1}
         strokeDasharray="2 3"
       />
-      <polygon points="97,64 97,72 90,68" fill="var(--color-terracotta)" />
+      <polygon points="91,46 91,54 84,50" fill="var(--color-terracotta)" />
       <text
-        x={119}
-        y={84}
-        fontSize={10}
+        x={117}
+        y={66}
+        fontSize={9}
         fill="var(--color-terracotta-deep)"
         textAnchor="middle"
         fontStyle="italic"
@@ -672,7 +672,7 @@ const IMANIC_BEATS: Beat[] = [
   },
   {
     kicker: "The hard part",
-    headline: "Production teaches what AI can't",
+    headline: "What AI can't teach you",
     detail:
       "Three Stripe race conditions in one morning. The senior's job: know which uncommon failures will burn you.",
     Visual: HardenVisual,

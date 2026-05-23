@@ -51,19 +51,6 @@ export function SideProjectCard({ project }: { project: Project }) {
           {project.description}
         </p>
 
-        {project.tech.length > 0 ? (
-          <ul className="mt-auto flex flex-wrap gap-1.5 pt-6">
-            {project.tech.map((t) => (
-              <li
-                key={t}
-                className="mono rounded px-2 py-1 text-[10px] tracking-wider text-(--color-paper)/95"
-                style={{ backgroundColor: "var(--color-teal-deep)" }}
-              >
-                {t}
-              </li>
-            ))}
-          </ul>
-        ) : null}
       </div>
     </div>
   );
