@@ -1,0 +1,29 @@
+---
+title: "LLM Council"
+slug: "llm-council"
+description: "Multi-model deliberation app where LLMs debate each other, peer-review answers, and you can jump into the conversation."
+date: "2026-02-01"
+status: "active"
+type: "project"
+tech: ["React", "FastAPI", "Python", "OpenRouter", "SSE Streaming"]
+github: "https://github.com/hummaam27/llm-council"
+image: "/images/llm-council.png"
+featured: true
+order: 6
+---
+
+<LLMCouncilGallery />
+
+Most multi-LLM tools just fan out the same prompt and show you the answers side by side. LLM Council does something different. You pick a panel of models, send them a question, and they actually talk to each other. They debate, they peer-review, and a separate moderator synthesizes the result. You can jump in mid-conversation if you want to steer it.
+
+## Two modes
+
+**Council** is a three-stage pipeline. Every model answers in parallel, then each one anonymously ranks the others (no favoritism when they don't know who said what), and a chairman writes the final synthesis from everything.
+
+**Debate** is the more interesting one. You assign adversarial roles to each panelist (Skeptic, Devil's Advocate, Fact-Checker, and so on) so they don't just agree with each other. A moderator decides who speaks next based on who has something useful to add. The whole thing streams token by token. There's a "raise your hand" bar at the bottom so you can interject whenever you want, and the next panelist will respond to you directly.
+
+## Key decisions
+
+Everything runs through OpenRouter, so one API key gives you access to every provider. Web search is optional per session, and any turn that searched shows its sources inline. Prompts are brevity-enforced (opening statements capped at about 60 words, replies at 45) because without that constraint, LLMs will waffle forever. Cost tracking is live and per-turn so you always know what a deliberation is costing you.
+
+Started as a fork of Andrej Karpathy's llm-council concept. The council scaffolding came from there. Debate mode, role assignment, streaming, raise-hand interjections, web search, and the moderator picker are all new. MIT licensed.
