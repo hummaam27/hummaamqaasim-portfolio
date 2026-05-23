@@ -1,5 +1,5 @@
 /**
- * ReconciliationMatrix — 4 sources × 4 years grid of percentage-match
+ * ReconciliationMatrix — 6 sources × 5 years grid of percentage-match
  * values, color-tinted by tier. Visualizes the validation discipline that
  * made the medallion safe to cut over to production. Cells that meet the
  * 99.5% bar tint green; cells with characterized residuals tint warm.
@@ -9,10 +9,10 @@
  */
 
 const W = 1200;
-const H = 540;
+const H = 720;
 
 const YEARS = ["2022", "2023", "2024", "2025", "2026"] as const;
-const SOURCES = ["VMS A", "VMS B", "VMS C", "VMS D"] as const;
+const SOURCES = ["VMS A", "VMS B", "VMS C", "VMS D", "VMS E", "VMS F"] as const;
 
 // Sample of harness output. Empty cells (null) mean the vendor wasn't yet
 // on our platform that year — N/A is honest, not a gap.
@@ -22,6 +22,8 @@ const DATA: (number | null)[][] = [
   [ null,   null,   99.6,   99.7,   99.8 ], // VMS B — onboarded 2024
   [ null,   99.4,   99.6,   99.7,   99.8 ], // VMS C — onboarded 2023
   [ 99.5,   99.6,   99.7,   99.8,   99.9 ], // VMS D — internal, full history
+  [ null,   null,   null,   null,   null ], // VMS E — onboarding
+  [ null,   null,   null,   null,   null ], // VMS F — onboarding
 ];
 
 // Tier the numbers for color treatment.
@@ -287,7 +289,7 @@ export function ReconciliationMatrix() {
         className="mt-4 text-center text-[13px] italic text-(--color-ink-muted)"
         style={{ fontFamily: "var(--font-serif)" }}
       >
-        Figure 2. The harness compares every fact-grain in the new pipeline against the legacy production data, per source, per year. Sixteen cells, fully characterized.
+        Figure 2. The harness compares every fact-grain in the new pipeline against the legacy production data, per source, per year. All active cells fully characterized. N/A cells are sources not yet onboarded.
       </figcaption>
     </figure>
   );

@@ -31,11 +31,11 @@ function Storyboard({ kicker, beats }: { kicker: string; beats: Beat[] }) {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg bg-(--color-rule) sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:gap-px sm:overflow-hidden sm:rounded-lg sm:bg-(--color-rule) sm:grid-cols-2 xl:grid-cols-4">
         {beats.map((beat, i) => (
           <div
             key={beat.kicker}
-            className="flex flex-col bg-(--color-paper-2) p-5"
+            className="flex flex-col rounded-lg border border-(--color-rule) bg-(--color-paper-2) p-5 sm:rounded-none sm:border-0"
           >
             <div className="mb-3 flex items-center gap-2.5">
               <span className="mono text-[11px] font-semibold tabular-nums text-(--color-terracotta)">
@@ -48,7 +48,7 @@ function Storyboard({ kicker, beats }: { kicker: string; beats: Beat[] }) {
               />
             </div>
 
-            <div className="mb-4 h-[112px] rounded-md bg-(--color-paper-3) p-2">
+            <div className="mb-4 h-[88px] rounded-md bg-(--color-paper-3) p-2 sm:h-[112px]">
               <beat.Visual />
             </div>
 
@@ -72,7 +72,7 @@ function Storyboard({ kicker, beats }: { kicker: string; beats: Beat[] }) {
    MEDALLION LAKEHOUSE — mess, move, build, result
    =========================================================================== */
 
-/** Beat 1 — four source documents, scattered and askew: the manual mess. */
+/** Beat 1 — six source documents, scattered and askew: the manual mess. */
 function MessVisual() {
   const docs = [
     { x: 22, y: 36, r: -9, front: false },
@@ -219,38 +219,34 @@ function StackVisual() {
   );
 }
 
-/** Beat 4 — a near-complete ring gauge: the 99.5% reconciliation match. */
+/** Beat 4 — checkmark badge with 99.5% reconciliation match. */
 function GaugeVisual() {
   const cx = 116;
-  const cy = 66;
-  const r = 42;
-  const circ = 2 * Math.PI * r;
-  const pct = 0.995;
+  const cy = 46;
   return (
     <svg viewBox="0 0 232 140" className="h-full w-full" aria-hidden="true">
-      <circle
-        cx={cx}
-        cy={cy}
-        r={r}
-        fill="none"
-        stroke="var(--color-rule-strong)"
-        strokeWidth={7}
-      />
-      <circle
-        cx={cx}
-        cy={cy}
-        r={r}
-        fill="none"
+      {/* Shield / badge shape */}
+      <path
+        d={`M${cx} 8 L${cx + 36} 26 L${cx + 36} 58 Q${cx + 36} 84 ${cx} 92 Q${cx - 36} 84 ${cx - 36} 58 L${cx - 36} 26 Z`}
+        fill="var(--color-terracotta)"
+        fillOpacity={0.10}
         stroke="var(--color-terracotta)"
-        strokeWidth={7}
-        strokeLinecap="round"
-        strokeDasharray={`${circ * pct} ${circ}`}
-        transform={`rotate(-90 ${cx} ${cy})`}
+        strokeWidth={1.4}
       />
+      {/* Checkmark */}
+      <polyline
+        points={`${cx - 12},${cy + 2} ${cx - 3},${cy + 12} ${cx + 14},${cy - 8}`}
+        fill="none"
+        stroke="var(--color-terracotta-deep)"
+        strokeWidth={3.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* 99.5% below the shield */}
       <text
         x={cx}
-        y={cy + 2}
-        fontSize={24}
+        y={118}
+        fontSize={20}
         fontWeight={700}
         fill="var(--color-terracotta-deep)"
         textAnchor="middle"
@@ -260,14 +256,14 @@ function GaugeVisual() {
       </text>
       <text
         x={cx}
-        y={cy + 20}
+        y={133}
         fontSize={9}
         letterSpacing={2.5}
         fill="var(--color-ink-muted)"
         textAnchor="middle"
         style={{ fontFamily: "var(--font-mono)" }}
       >
-        MATCH
+        RECONCILED
       </text>
     </svg>
   );
@@ -276,30 +272,30 @@ function GaugeVisual() {
 const MEDALLION_BEATS: Beat[] = [
   {
     kicker: "The mess",
-    headline: "Four systems, pulled by hand",
+    headline: "Six systems, no shared language",
     detail:
-      "Every Friday, 1–5pm: four VMS portals, invoices downloaded one by one and copy-pasted into a master file.",
+      "Six VMS platforms, each with its own data shape and change semantics. Reporting ran on email and spreadsheets.",
     Visual: MessVisual,
   },
   {
     kicker: "The move",
-    headline: "One lakehouse on Fabric",
+    headline: "One architecture on Fabric",
     detail:
-      "Scrap the dataflow stack. Build a Medallion architecture — a single governed source of truth.",
+      "Build a Medallion architecture and a governed semantic model. One source of truth.",
     Visual: ConvergeVisual,
   },
   {
     kicker: "The build",
     headline: "Bronze → Silver → Gold",
     detail:
-      "~57 source tables across four vendor schemas, conformed into 5 fact tables and 6 dimensions.",
+      "Six vendor schemas, canonicalized into one governed star schema. Each source ingested on its own terms.",
     Visual: StackVisual,
   },
   {
     kicker: "The result",
     headline: "99.5%+, and the ritual's gone",
     detail:
-      "Reconciled across four years of history. 30+ reports collapsed onto one model. No more Friday pull.",
+      "Reconciled across four years of history. 30+ reports on one governed model. Still scaling.",
     Visual: GaugeVisual,
   },
 ];

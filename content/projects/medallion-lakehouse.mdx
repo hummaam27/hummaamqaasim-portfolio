@@ -1,11 +1,11 @@
 ---
-title: "Medallion Lakehouse"
+title: "Medallion Architecture"
 slug: "medallion-lakehouse"
-description: "Founding architecture work unifying four workforce platforms into a canonical Fabric lakehouse."
+description: "Founding architecture work unifying six workforce platforms into a canonical Fabric Medallion architecture."
 date: "2025-02-01"
 status: "shipped"
 type: "case-study"
-tech: ["Microsoft Fabric", "PySpark", "Delta Lake", "Power BI", "DAX", "T-SQL", "Kimball", "REST API", "SFTP", "Azure DevOps"]
+tech: ["Microsoft Fabric", "PySpark", "Delta Lake", "Power BI", "DAX", "T-SQL", "REST API", "SFTP", "Azure DevOps"]
 featured: true
 order: 2
 ---
@@ -14,90 +14,87 @@ order: 2
 
 ## The Problem
 
-I'm the founding data hire at a healthcare staffing MSP that manages contingent workforces for hospitals and school districts across the country. When I joined, the company was three years in and running all of its financial and operational reporting off a chain of Power BI dataflows fed by manually pulled Excel files and scheduled email attachments.
+I joined a healthcare staffing MSP as its founding data hire. The company was two years in. Small enough that everything still ran on email and spreadsheets, growing fast enough that the approach was about to stop working. There was no BI. No dashboards, no models, no single number anyone agreed on. When a leader needed a figure (margin on a placement, headcount on a contract, invoice status for a client) they emailed whoever they thought might know it, and waited.
 
-Every Friday between 1pm and 5pm, the team had to pull spread data — the margin between what we bill facilities and what we pay workers — from four separate Vendor Management Systems, consolidate it by hand, and ship it to our parent company for financial reporting. Some of these VMS systems didn't offer consolidated exports. We were opening individual client tenants, downloading invoices one by one, and copy-pasting them into a master file. Some of the files arrived as Excel 97 format that Power BI's optimization engine couldn't parse. If something broke — a mispaste, a missed email schedule, a column that changed shape — the only way to see the fix was to republish the dataflow, wait 30 minutes, and check again.
-
-On top of that, the company had accumulated about 30 Power BI reports over the years, each with its own semantic model and locally defined measures. Same metric, different numbers in different reports. Constant complaints from stakeholders: "this doesn't match that." The root cause was structural — there was no single source of truth.
+I built Power BI from scratch. The first reports went out with proper models, each one shaped to the stakeholder who asked for it. Finance, operations, account management, sales. They all had legitimate reasons to define the same metric slightly differently, and every report was correct in its own context. By the time the catalog hit ten reports, the problem surfaced. Leadership read two dashboards side by side and saw different numbers for the same thing. Every report was right. The system was incoherent.
 
 <MetricDrift />
 
-I proposed building a Medallion lakehouse architecture on Microsoft Fabric to replace the entire stack. My manager agreed.
+Fixing it wasn't a technical decision I could make alone. I spent weeks consulting with program management, finance, leadership, and the sales team to understand what each definition meant to them, why it mattered, and where the real boundaries were. We consolidated those conversations into a single set of canonical definitions, approved by leadership, with any report-specific logic explicitly flagged so nobody had to guess which version of a number they were looking at.
 
-## What Made This Hard
+What made that enforceable was a governed semantic model sitting on top of a Medallion architecture on Microsoft Fabric. The Medallion ingests and conforms data from multiple vendor systems into one canonical model. The semantic model governs it. Every measure, every calculation, every business definition lives in that model once. When someone downstream needs a new report, they import the model and build visuals. They don't write custom logic. They don't redefine margin. Data drift became structurally impossible, and reporting got dramatically faster. The catalog kept growing as the company scaled, but every new report shipped on the same foundation as the last one.
 
-Before this project I'd shipped Power BI semantic models, DAX measures, and SQL-based reporting work, but the Fabric medallion stack — PySpark in production, Delta Lake MERGE patterns, Kimball-style modeling against bronze — was new ground for me. I had to close that gap and ship the first version while still running the old Friday process every week. The way I closed it: studied the parent company's BI team's medallion implementation, read every Microsoft Fabric reference architecture I could find, and prototyped against the simplest of the four VMSs first to validate the patterns before scaling them across the other three.
+## The Challenge
 
-The technical complexity wasn't just "build a pipeline." It was unifying four completely different vendor systems into one canonical data model:
+A VMS (Vendor Management System) is the central platform that healthcare staffing runs on. It manages the full lifecycle of a placement: job orders from facilities, candidate submissions from agencies, credentialing, shift scheduling, timecards, invoicing, billing, rate negotiations, worker compliance. Every transaction between a hospital and the staffing agencies filling its roles flows through a VMS. They are large, complex systems, and most companies in this space don't run one. They run several.
 
-**VMS A (REST API)** — our primary VMS, covering the most clients. The API exposes a "new and modified since" filter, so we pull with a 3-day overlapping window and deduplicate downstream.
+The business currently runs on four of them, with another two being onboarded. None of them were designed to be unified, and the differences go far deeper than schema.
 
-**VMS B (REST + Custom Report API)** — a Workday-ecosystem VMS with a REST API for core entities and a separate custom-report API for timecards and shifts. The critical constraint: the API only returns currently-active records. If a record is hard-deleted on their end, it silently disappears from the next pull. No notification, no tombstone, no audit trail.
+- **Delivery channels have nothing in common.** One source exposes a REST API with change timestamps. Another only returns currently-active records, so if something is deleted upstream it silently disappears with no tombstone. A third ships daily SFTP CSVs with no incremental markers. A fourth is a live database shortcut. Each one requires a completely different ingestion pattern.
+- **Change semantics diverge.** Some APIs tell you what changed. Others make you figure it out by diffing against yesterday. One vendor periodically freezes entire tables for months without notice. A pipeline that assumes they all behave the same will quietly lose data.
+- **Business concepts don't align.** A "submission" in one system has five stages. In another it has three, with different names. The lifecycle of an order, the definition of an active worker, the point at which a timecard is considered approved, all different.
+- **Timecard and invoicing workflows vary.** Which timekeeping solution backs the data, how approvals flow, what level of line-item detail is exposed on an invoice. Some systems give you everything. Others give you a summary with no way to drill in.
+- **Entity depth is inconsistent.** Some systems expose rich detail on agencies, clients, and facilities. Others give you an ID and a name. The canonical model has to hold all of them without fabricating detail that doesn't exist in the source, and without dropping detail that does.
+- **Foreign key assumptions break.** One system's assignment records overwhelmingly skip the standard position key because workers were onboarded outside the normal workflow. Joining naively sent thousands of shifts to "Unknown Facility" in the gold layer. The fix was understanding the denormalized structure, not fixing the join.
 
-**VMS C (SFTP CSV)** — delivers data via daily SFTP CSV drops. The vendor periodically freezes specific tables for months at a time (their timekeeping data was stuck at 2023 when I started). The files land as raw CSVs with no incremental markers.
-
-**VMS D (Internal/Proprietary)** — our proprietary VMS, accessible via a live Fabric shortcut to the production database. The twist: 89% of assignment records have no position ID. These are "manual assignments" — placements where workers were onboarded directly without going through the standard offer/position workflow. I only discovered this after tracing why 15,000 shifts were mapping to "Unknown Facility" in the gold layer, reaching out to the database team, and learning that the position context for these assignments is denormalized onto the assignment row itself rather than linked through a position table.
-
-Each source required its own ingestion pattern. You can't treat an API that only returns active records the same way you treat an API that tells you what changed. Pretending they're the same is how you get silent data loss.
+The model had to be built to the lowest common denominator where the systems diverge, and enriched where individual systems offered more depth.
 
 ## The Architecture
 
 <MedallionArchitecture />
 
-Three Fabric items, three layers:
+Three layers, each one solving a problem the layer above it doesn't have to know about.
 
-**Bronze (the bronze lakehouse)** — Raw landing zone. Source column casing preserved exactly as received. One schema per VMS. Append-only wherever possible so we never lose the audit trail. Each source gets the ingestion pattern its constraints demand:
+**Bronze** is the raw landing zone. Source column casing preserved as received, one schema per VMS, append-only wherever the source's change semantics allow it. The ingestion pattern is matched to the source, not imposed on it. An overlap window on the API that publishes change timestamps. An incremental MERGE on the system with reliable watermarks. An append with file-date tiebreaker for the SFTP feed. And for the VMS that silently drops deleted records, a three-clause soft-delete MERGE that refreshes the active rows, inserts genuine new ones, and audit-trails the disappearances rather than treating absence as a non-event.
 
-- VMS A: Append with overlap window, deduplicated at silver
-- VMS D: Incremental Delta MERGE on watermark columns
-- VMS B: MERGE with soft-delete — when a record disappears from the API, we don't delete it. We flip `_IsActive` to false and stamp `_DeletedTimestamp`. Three MERGE clauses in one atomic operation: refresh existing records, insert genuine new ones, and audit-trail the disappearances.
-- VMS C: Append with file-date tiebreaker parsed from the `_SourceFile` audit column
+**Silver** is where the vocabularies become one. Per-source transforms map each vendor's column language onto a canonical schema, and a master-append step unions them into unified facts and dimensions with deterministic surrogate keys. The work is conformance, not transport.
 
-**Silver (the silver lakehouse)** — Two stages. First, per-VMS "split" notebooks transform raw bronze into canonical fact and dimension shapes, mapping each source's column vocabulary onto VMS A's schema (the most comprehensive). Second, a master-append notebook UNIONs all four sources into unified tables and stamps deterministic surrogate keys.
+**Gold** is a Fabric Warehouse. Conformed facts joined to shared dimensions, with every VMS's native status codes reconciled against one canonical model. The materialization runs as a transactional TRUNCATE+INSERT inside a stored procedure rather than DROP+CREATE, because Direct Lake reads the underlying parquet live and a drop opens a "table not found" window to anyone querying at the wrong moment.
 
-**Gold (the gold warehouse)** — A Fabric Warehouse with a Kimball star schema: five fact tables (orders, submissions, shifts, timecards, invoices) conformed against dimension tables for dates, locations, workers, orders, and two seed-loaded status dimensions that encode how each VMS's native status codes map to a single canonical submission funnel.
+A single governed semantic model sits on top. All measures, all business logic, defined once. Every report draws from this one model. Row-Level Security handles departmental scoping without duplicating dashboards.
 
-The gold materialization runs as a transactional TRUNCATE+INSERT inside a stored procedure — not DROP+CREATE — because Direct Lake reads the warehouse parquet files live and a DROP exposes a "table not found" window to anyone querying at that moment.
+## What Broke, and What I Took From It
 
-One governed Power BI semantic model sits on top of the gold layer with all measures and business logic locked at the model level. 30+ reports draw from this single model. Row-Level Security ensures departments see only their data without duplicating reports.
+**An "incremental" upsert that was secretly an overwrite.** A backwards-compatibility alias in a shared utility was delegating to `mode("overwrite")` instead of performing a real Delta MERGE. The pipeline was filtering source data to a recent window and writing that window back as the entire bronze table. The damage hadn't surfaced because the function had rarely fired with non-empty deltas. A coincidence dressed as correctness. I rewrote it as a real MERGE backed by a behavioral test that proves the four properties that matter: initial write, update in place, preserve untouched rows, insert new. The test that had let the bug ship asserted the function worked. The new one asserts the function fails the right way when it's wrong.
 
-## What Broke Along the Way
+**A source pinned to a stale filename.** One of the SFTP ingestions had a hardcoded date in its Copy activity, so the pipeline had spent five weeks re-ingesting the same file while new daily drops landed unread. Bronze looked healthy because the row count never decreased. The first run after the fix produced thousands of rows confirming the silent gap. Lesson taken: append-only pipelines need a freshness check, not just a row count.
 
-**The resilient_upsert function was secretly an overwrite.** A backwards-compatibility alias in our shared utilities was delegating to `mode("overwrite")` instead of performing a real Delta MERGE. The "incremental" pipeline was filtering source data to a recent window and writing that window back as the entire bronze table. It hadn't caused visible damage yet — but only because the function had rarely fired with non-empty deltas. I rewrote it as a proper MERGE with a four-property behavioral test (initial write, update, preserve untouched rows, insert new) plus an idempotency check. The previous test was so weak it would have passed against the broken implementation, which is exactly why the bug shipped.
+**A Delta schema-evolution edge case on the soft-delete MERGE.** The `whenNotMatchedBySourceUpdate` clause referenced soft-delete columns that didn't exist on legacy tables created by the old overwrite pattern, and Delta's `autoMerge` doesn't help that specific clause. It resolves SET columns against the pre-evolution schema. The fix was an explicit `ALTER TABLE` ahead of the MERGE with a `COALESCE` guard so the first run after migration was well-defined. The deeper lesson was about trusting platform-level "automatic" guarantees. They cover the common path, and the senior engineer's job is knowing which uncommon path they don't cover.
 
-**The VMS C SFTP pipeline was pinned to a single filename.** Every Copy activity had a hardcoded March 30 CSV filename, so every daily April file had been silently skipped while bronze re-ingested the same stale data each run. Five weeks of growth, invisible. The first post-fix run produced thousands of new rows confirming the gap.
+**A cross-layer deployment deadlock from a single PR.** A project-wide rename to snake_case in one commit meant the gold procedure referenced silver columns that didn't exist yet, the silver notebooks couldn't run until the procedure compiled, and the warehouse's XMLA model definition still carried the old casing. Recovery took three sequenced commits in a specific order. The rule that came out of it (schema changes in Fabric have a required deployment order across bronze, silver, gold, and the semantic model) is now documented and enforced before any cross-layer change ships.
 
-**The VMS B soft-delete MERGE hit a Delta schema evolution edge case.** The `whenNotMatchedBySourceUpdate` clause references `_IsActive` and `_DeletedTimestamp` columns that didn't exist on legacy tables created by the old overwrite pattern. Delta's `autoMerge` schema evolution doesn't help this specific clause — it resolves SET columns against the pre-evolution schema. Fix: ALTER TABLE to add the soft-delete columns before the MERGE, with a `COALESCE(_IsActive, true) = true` guard so the first run after migration is well-defined.
+## Proving It Was Right
 
-**A project-wide column rename created a three-layer deployment deadlock.** Renaming all silver and gold columns to snake_case in a single commit meant the gold stored procedure referenced silver columns that didn't exist yet, while silver notebooks couldn't run until the gold procedure compiled. On top of that, the warehouse's own XMLA model definition still carried old PascalCase column names, throwing errors on refresh. Recovery required three sequenced commits: stub the procedure, delete a stale semantic model reference, and strip legacy columns from the XMLA JSON. The deployment ordering rule that came out of this is now documented and enforced.
+A new pipeline replacing reports that executives already trusted doesn't get the benefit of the doubt. It has to earn the cutover.
 
-## The Validation
+I built a reconciliation harness that compared the new gold output against the legacy figures, per source, per grain, per year. The comparison had to apply the same filters the legacy reports applied (they weren't naive snapshots) or the differences would be artifacts of methodology rather than logic. Every residual got triaged into a living log with a status legend: within tolerance, material gap, characterized cause, open question. Nothing shipped while a material gap was unresolved.
 
-Before cutover, the new pipeline had to prove it agreed with the existing production dataflows that executives already depended on.
-
-I built a multi-month reconciliation process that compared the new gold output against the legacy production data, per-VMS, per-grain, per-year. The comparison applied the same filters the legacy system used — because the legacy CSVs were pre-filtered differently per VMS before they reached the dataflow, so a naive comparison would show false mismatches.
-
-The final result: **99.5%+ reconciliation match across all four VMS sources and four years of order, timecard, and invoice history.** The remaining residuals were fully characterized as API-vs-CSV refresh-cadence drift — the new system pulled from live APIs while the legacy system read from periodic CSV exports — not logic gaps. I maintained a living reconciliation log that tracked every open quirk with a status legend (within tolerance, material gap, blocker, not started).
+The final number was a **99.5%+ match across all four sources and four years of order, timecard, and invoice history.** The remaining residuals were fully characterized as refresh-cadence drift between live API ingestion and the legacy CSV exports. A property of when the data was sampled, not a defect in how it was modeled.
 
 <ReconciliationMatrix />
 
 ## Results & Impact
 
-- **99.5%+ reconciliation match** across all four VMS sources and four years of order, timecard, and invoice history. Residuals fully characterized as refresh-cadence drift, not logic gaps.
-- **30+ Power BI reports collapsed onto one governed semantic model** with Row-Level Security, ending the "this doesn't match that" disputes between dashboards.
-- **The Friday manual-pull ritual is gone.** Spread reporting now flows from live API and SFTP ingestion through bronze → silver → gold without human assembly.
-- **~57 source tables across four vendor schemas** consolidated into 5 conformed fact tables and 6 dimensions on a Kimball star.
-- **Operational standards in place**: behavioral tests for MERGE patterns, documented deployment ordering for cross-layer schema changes, a living reconciliation log with status legend.
+- **99.5%+ reconciliation match** across all sources and four years of order, timecard, and invoice history. Residuals fully characterized as refresh-cadence drift, not logic gaps.
+- **30+ reports on one governed semantic model** with Row-Level Security, ending the "this doesn't match that" disputes between dashboards.
+- **Financial reporting runs end-to-end** from live API and SFTP ingestion through bronze, silver, gold, and into the dashboards leadership opens on Monday morning. No manual assembly.
+- **Operational standards in place.** Behavioral tests for MERGE patterns. Documented deployment ordering for cross-layer schema changes. A living reconciliation log with status legend.
+- **Git-backed PR workflow replaced publish-to-production.** Every change goes through Azure DevOps with code review before it touches the production workspace. The same instinct that centralized the data model centralized the deployment process.
+- **New source onboarding is repeatable.** Two additional VMS integrations are being onboarded into the existing pattern without changes to silver or gold. The architecture made that a process, not a project.
+- **Self-serve reporting.** Downstream analysts import the governed model and build visuals. They don't write queries, define measures, or make modeling decisions. That's already done. It removed the founding data hire as a bottleneck on every new report.
+
+## What's Underway
+
+Two additional VMS integrations are being onboarded into the existing bronze-silver-gold pattern. The architecture absorbs them without changes to the silver conformance layer or the gold schema.
+
+The bigger expansion is the CRM. This is a different class of source entirely. It holds the business development pipeline (opportunities, sales stages, conversations), client and supplier master data, divisional ownership, team assignments, and implementation phases. Integrating it means the lakehouse will connect operational workforce data to the commercial relationships that drive it. Reporting that currently requires someone to cross-reference a VMS dashboard with a CRM screen will resolve to a single query against the governed model.
 
 ## What I'd Do Differently
 
-I would have written the behavioral tests for the MERGE functions before writing the functions themselves. The resilient_upsert bug shipped because the test was written to confirm the function worked, not to catch the specific failure mode. Test-first would have surfaced it before any data was written.
+I'd version the semantic model independently from the lakehouse. Right now a column rename in silver can break a DAX measure in the semantic model, and you only find out when the dataset refresh fails. If the semantic model had its own contract tests against the gold schema, those breaks would surface in the PR, not in production at 6 AM.
 
-I would have documented the deployment ordering constraint on day one instead of discovering it through a deadlock. Cross-layer schema changes in Fabric require a specific commit sequence — that's a platform property, not a bug, and knowing it upfront saves a week.
-
-I would have pushed harder on the VMS vendors for API access earlier. The time spent manually pulling Excel files while waiting for API credentials was the most expensive waste in the project.
+I'd also push harder on data contracts earlier. The split notebooks in silver do the conformance work, but the "contract" between bronze and silver is implicit. It lives in the notebook logic, not in a schema definition that a pipeline can validate before it runs. That means a source-side schema change (a renamed column, a new enum value, a field that quietly goes nullable) passes bronze without complaint and blows up in silver. A lightweight contract layer, even just a JSON schema check at the bronze-to-silver boundary, would have caught several of the issues described in the "What Broke" section before they reached the transform step.
 
 ## The Stack
 
-Microsoft Fabric (Lakehouses, Warehouses, Data Pipelines, Direct Lake, Fabric-Git integration), PySpark, Spark SQL, Delta Lake, Python, T-SQL, Power BI, DAX, Kimball star schema modeling, Azure DevOps with Git-based PR workflows, REST API integration, SFTP ingestion.
-
+Microsoft Fabric (Lakehouses, Warehouses, Data Pipelines, Direct Lake, Fabric-Git integration), PySpark, Spark SQL, Delta Lake, Python, T-SQL, Power BI, DAX, Azure DevOps with Git-based PR workflows, REST API integration, SFTP ingestion.

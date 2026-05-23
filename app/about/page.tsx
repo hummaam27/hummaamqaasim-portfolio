@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 const currently = [
-  "Architecting a four-source Medallion lakehouse in Microsoft Fabric",
+  "Architecting a six-source Medallion architecture on Microsoft Fabric",
   "Imanic — Islamic edtech platform launching mid-2026",
   "DP-700 certification (in progress)",
 ];
@@ -37,9 +37,9 @@ export default function AboutPage() {
         <div className="mt-8 space-y-7 font-serif text-[17px] leading-[1.65] text-(--color-ink)">
           <p>
             I&apos;m the founding data hire at a healthcare workforce MSP,
-            where I&apos;m architecting a four-source Medallion lakehouse in
-            Microsoft Fabric — unifying staffing, payroll, ATS, and
-            financial platforms into a single canonical model. The work that
+            where I&apos;m architecting a Medallion architecture on
+            Microsoft Fabric, unifying six workforce platforms into a single
+            canonical model behind a governed semantic layer. The work that
             excites me sits at the intersection of cloud, data, and AI:
             building infrastructure that makes good decisions cheap.
           </p>

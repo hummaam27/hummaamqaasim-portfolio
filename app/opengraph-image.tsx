@@ -81,7 +81,7 @@ export default async function Image() {
               maxWidth: 880,
             }}
           >
-            Production Microsoft Fabric Medallion lakehouses and governed Power BI semantic models.
+            Production Medallion architecture on Microsoft Fabric. Governed semantic model. Six sources, one truth.
           </div>
         </div>
 

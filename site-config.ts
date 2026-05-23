@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "Hummaam Qaasim",
   title: "Hummaam Qaasim — Analytics Engineer",
   description:
-    "Analytics Engineer architecting production Microsoft Fabric Medallion lakehouses and governed Power BI semantic models. Founding data hire at a healthcare workforce MSP.",
+    "Analytics Engineer architecting a production Medallion architecture on Microsoft Fabric and a governed semantic model. Founding data hire at a healthcare workforce MSP.",
   url: "https://hummaamqaasim.com",
   ogImage: "https://hummaamqaasim.com/opengraph-image",
 

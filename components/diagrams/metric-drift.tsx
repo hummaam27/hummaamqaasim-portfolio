@@ -19,10 +19,9 @@ const CARDS = [
   { value: "16.8%", num: 16.8, bars: [26, 30, 24, 21, 27] },
 ];
 
-// The remaining ~24 reports — plotted as faint dots only, to total 30+.
+// A few more reports beyond the six cards, to show the scatter across ~10.
 const EXTRA = [
-  17.1, 17.6, 18.0, 18.4, 18.6, 18.8, 19.0, 19.2, 19.5, 19.9, 20.0, 20.6,
-  16.5, 17.8, 18.1, 18.3, 18.7, 19.1, 19.4, 19.8, 20.1, 20.4, 17.3, 21.0,
+  17.1, 18.0, 19.5, 20.6,
 ];
 
 // Scale: margin % → x pixel.
@@ -49,7 +48,7 @@ export function MetricDrift() {
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label="One metric, thirty reports: each Power BI report computes gross margin differently, producing thirty different answers."
+        aria-label="One metric, multiple reports: each report computes gross margin differently, producing different answers."
         className="block h-auto w-full"
         style={{ fontFamily: "var(--font-mono)" }}
       >
@@ -63,7 +62,7 @@ export function MetricDrift() {
           textAnchor="middle"
           fontWeight={700}
         >
-          ONE METRIC · 30+ REPORTS · 30+ ANSWERS
+          ONE METRIC · MULTIPLE REPORTS · MULTIPLE ANSWERS
         </text>
 
         {/* Sample report cards */}
@@ -222,7 +221,7 @@ export function MetricDrift() {
           fontStyle="italic"
           style={{ fontFamily: "var(--font-serif)" }}
         >
-          Same KPI, computed thirty ways — a 4-point spread and no source of truth.
+          Same KPI, different reports. Every number was right in context. None of them agreed.
         </text>
       </svg>
 
@@ -230,8 +229,7 @@ export function MetricDrift() {
         className="mt-4 text-center text-[13px] italic text-(--color-ink-muted)"
         style={{ fontFamily: "var(--font-serif)" }}
       >
-        Figure. Thirty semantic models, thirty definitions of one number — the
-        structural root of every &ldquo;this doesn&rsquo;t match that.&rdquo;
+        Figure. Each report tuned to its stakeholder. No shared vocabulary underneath.
       </figcaption>
     </figure>
   );

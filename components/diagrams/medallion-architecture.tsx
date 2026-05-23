@@ -14,40 +14,43 @@ const BANDS = {
   gold:   { y: 440, h: 160, fill: "rgba(200, 154, 61, 0.12)", stroke: "rgba(200, 154, 61, 0.40)", label: "GOLD" },
 } as const;
 
-const VMS = ["vms_a", "vms_b", "vms_c", "vms_d"] as const;
-const FACTS = ["orders", "submissions", "shifts", "timecards", "invoices"] as const;
+const VMS = ["vms_a", "vms_b", "vms_c", "vms_d", "vms_e", "vms_f"] as const;
+const GOLD_BLOCKS = [
+  { label: "CONFORMED FACTS", desc: "orders · submissions · shifts · timecards · invoices" },
+  { label: "SHARED DIMENSIONS", desc: "dates · locations · workers · statuses" },
+  { label: "SEMANTIC MODEL", desc: "governed measures · RLS · one source of truth" },
+] as const;
 
 const sourceLabels = [
   "REST",
   "REST + CUSTOM-REPORT",
   "SFTP CSV · DAILY",
   "FABRIC SHORTCUT",
+  "ONBOARDING",
+  "ONBOARDING",
 ];
 
-// Approximate source-table counts per vendor — placeholders, easy to retune
-// once the real numbers are confirmed.
-const tableCounts = [22, 12, 7, 16];
-const TOTAL_TABLES = tableCounts.reduce((a, b) => a + b, 0);
+const isOnboarding = [false, false, false, false, true, true];
 
 export function MedallionArchitecture() {
   // BRONZE/SILVER column layout
-  const colW = 220;
-  const gap = 18;
+  const colW = 155;
+  const gap = 10;
   const totalW = VMS.length * colW + (VMS.length - 1) * gap;
   const startX = (W - 80 - totalW) / 2 + 80;
 
   // GOLD column layout
-  const factColW = 180;
-  const factGap = 12;
-  const factTotalW = FACTS.length * factColW + (FACTS.length - 1) * factGap;
-  const factStartX = (W - 80 - factTotalW) / 2 + 80;
+  const goldColW = 300;
+  const goldGap = 16;
+  const goldTotalW = GOLD_BLOCKS.length * goldColW + (GOLD_BLOCKS.length - 1) * goldGap;
+  const goldStartX = (W - 80 - goldTotalW) / 2 + 80;
 
   return (
     <figure className="not-prose figure-wide my-14">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label="Medallion lakehouse architecture: four sources land in Bronze, are canonicalized in Silver, and modeled in Gold as a Kimball star schema."
+        aria-label="Medallion architecture: six VMS sources land in Bronze, are canonicalized in Silver, and modeled as a governed star schema in Gold."
         className="block w-full h-auto"
         style={{ fontFamily: "var(--font-mono)" }}
       >
@@ -83,8 +86,9 @@ export function MedallionArchitecture() {
         {/* BRONZE row */}
         {VMS.map((vms, i) => {
           const x = startX + i * (colW + gap);
+          const onboarding = isOnboarding[i];
           return (
-            <g key={`bronze-${vms}`}>
+            <g key={`bronze-${vms}`} opacity={onboarding ? 0.55 : 1}>
               <rect
                 x={x}
                 y={40}
@@ -93,12 +97,13 @@ export function MedallionArchitecture() {
                 fill="var(--color-paper-2)"
                 stroke="var(--color-ink)"
                 strokeWidth={0.9}
+                strokeDasharray={onboarding ? "4 3" : "none"}
                 rx={2}
               />
               <text
                 x={x + colW / 2}
                 y={64}
-                fontSize={17}
+                fontSize={15}
                 fontWeight={600}
                 fill="var(--color-ink)"
                 textAnchor="middle"
@@ -108,43 +113,12 @@ export function MedallionArchitecture() {
               <text
                 x={x + colW / 2}
                 y={84}
-                fontSize={11}
-                letterSpacing={1.8}
+                fontSize={10}
+                letterSpacing={1.5}
                 fill="var(--color-ink-muted)"
                 textAnchor="middle"
               >
                 {sourceLabels[i]}
-              </text>
-              {/* Thin divider above the count line */}
-              <line
-                x1={x + 28}
-                y1={97}
-                x2={x + colW - 28}
-                y2={97}
-                stroke="var(--color-rule-strong)"
-                strokeWidth={0.7}
-              />
-              {/* The punchy count — terracotta, bold */}
-              <text
-                x={x + colW / 2}
-                y={120}
-                fontSize={22}
-                fontWeight={700}
-                fill="var(--color-terracotta)"
-                textAnchor="middle"
-              >
-                {tableCounts[i]}
-              </text>
-              <text
-                x={x + colW / 2}
-                y={136}
-                fontSize={10}
-                letterSpacing={2}
-                fill="var(--color-ink-muted)"
-                textAnchor="middle"
-                fontWeight={600}
-              >
-                SOURCE TABLES
               </text>
             </g>
           );
@@ -170,8 +144,9 @@ export function MedallionArchitecture() {
         {/* SILVER row 1: split notebooks */}
         {VMS.map((vms, i) => {
           const x = startX + i * (colW + gap);
+          const onboarding = isOnboarding[i];
           return (
-            <g key={`silver-split-${vms}`}>
+            <g key={`silver-split-${vms}`} opacity={onboarding ? 0.55 : 1}>
               <rect
                 x={x}
                 y={230}
@@ -180,6 +155,7 @@ export function MedallionArchitecture() {
                 fill="var(--color-paper-2)"
                 stroke="var(--color-ink)"
                 strokeWidth={0.9}
+                strokeDasharray={onboarding ? "4 3" : "none"}
                 rx={2}
               />
               <text
@@ -256,7 +232,7 @@ export function MedallionArchitecture() {
           fontStyle="italic"
           style={{ fontFamily: "var(--font-serif)" }}
         >
-          {`~${TOTAL_TABLES} source tables → 5 conformed facts + 6 dimensions`}
+          six vendor schemas → one canonical model
         </text>
 
         {/* MASTER → GOLD arrow */}
@@ -274,71 +250,60 @@ export function MedallionArchitecture() {
         />
 
         {/* GOLD row */}
-        {FACTS.map((f, i) => {
-          const x = factStartX + i * (factColW + factGap);
+        {GOLD_BLOCKS.map((block, i) => {
+          const x = goldStartX + i * (goldColW + goldGap);
+          const isSemantic = i === GOLD_BLOCKS.length - 1;
           return (
-            <g key={`gold-${f}`}>
+            <g key={`gold-${i}`}>
               <rect
                 x={x}
                 y={486}
-                width={factColW}
+                width={goldColW}
                 height={68}
-                fill="var(--color-paper-2)"
-                stroke="var(--color-ink)"
-                strokeWidth={0.9}
+                fill={isSemantic ? "rgba(200, 154, 61, 0.12)" : "var(--color-paper-2)"}
+                stroke={isSemantic ? "rgba(200, 154, 61, 0.65)" : "var(--color-ink)"}
+                strokeWidth={isSemantic ? 1.4 : 0.9}
                 rx={2}
               />
               <rect
                 x={x}
                 y={486}
-                width={factColW}
+                width={goldColW}
                 height={4}
                 fill="var(--color-terracotta)"
               />
               <text
-                x={x + factColW / 2}
-                y={516}
-                fontSize={16}
-                fontWeight={600}
+                x={x + goldColW / 2}
+                y={510}
+                fontSize={13}
+                fontWeight={700}
+                letterSpacing={2}
                 fill="var(--color-ink)"
                 textAnchor="middle"
               >
-                fact_{f}
+                {block.label}
               </text>
               <text
-                x={x + factColW / 2}
+                x={x + goldColW / 2}
                 y={538}
-                fontSize={12}
+                fontSize={11}
                 fill="var(--color-ink-muted)"
                 textAnchor="middle"
                 fontStyle="italic"
                 style={{ fontFamily: "var(--font-serif)" }}
               >
-                conformed dims
+                {block.desc}
               </text>
             </g>
           );
         })}
-
-        {/* Bottom semantic-model note */}
-        <text
-          x={(W + 80) / 2}
-          y={582}
-          fontSize={12}
-          letterSpacing={2}
-          fill="var(--color-ink-muted)"
-          textAnchor="middle"
-          fontWeight={500}
-        >
-          → ONE GOVERNED POWER BI SEMANTIC MODEL · ROW-LEVEL SECURITY
-        </text>
       </svg>
 
       <figcaption
         className="mt-4 text-center text-[13px] italic text-(--color-ink-muted)"
         style={{ fontFamily: "var(--font-serif)" }}
       >
-        Figure 1. Three Fabric items, three layers: bronze raw, silver canonical, gold star.
+        Figure 1. Six sources, three layers. Two more onboarding into the same architecture.
       </figcaption>
     </figure>
   );

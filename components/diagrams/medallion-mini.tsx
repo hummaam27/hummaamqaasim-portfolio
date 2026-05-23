@@ -12,7 +12,7 @@ const BANDS = [
   {
     y: 26,
     label: "BRONZE",
-    desc: "4 raw VMS sources",
+    desc: "6 VMS sources",
     fill: "rgba(184, 115, 51, 0.12)",
     stroke: "rgba(184, 115, 51, 0.45)",
   },
@@ -26,7 +26,7 @@ const BANDS = [
   {
     y: 186,
     label: "GOLD",
-    desc: "5 facts · 6 dims",
+    desc: "governed star schema",
     fill: "rgba(200, 154, 61, 0.14)",
     stroke: "rgba(200, 154, 61, 0.5)",
   },
@@ -37,7 +37,7 @@ export function MedallionMini() {
     <svg
       viewBox={`0 0 ${W} ${H}`}
       role="img"
-      aria-label="Medallion lakehouse: bronze raw, silver canonical, gold star schema."
+      aria-label="Medallion architecture: bronze raw, silver canonical, gold star schema."
       className="block h-full w-full"
       style={{ fontFamily: "var(--font-mono)" }}
     >
