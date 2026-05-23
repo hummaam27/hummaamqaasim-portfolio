@@ -660,7 +660,7 @@ const IMANIC_BEATS: Beat[] = [
     kicker: "The bet",
     headline: "Architect it, don't type it",
     detail:
-      "Direct Claude Code to write the implementations — keep every architecture, schema, and trade-off decision human.",
+      "Direct Claude Code to write the implementations. Keep every architecture, schema, and trade-off decision human.",
     Visual: DirectVisual,
   },
   {
@@ -681,7 +681,7 @@ const IMANIC_BEATS: Beat[] = [
     kicker: "The result",
     headline: "11 months, ~900 files, shipped",
     detail:
-      "A multi-tenant, production-grade SaaS to feature-complete — evenings and weekends, alongside a day job.",
+      "A multi-tenant, production-grade SaaS to feature-complete. Evenings and weekends, alongside a day job.",
     Visual: ShippedVisual,
   },
 ];

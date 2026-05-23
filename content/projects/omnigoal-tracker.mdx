@@ -1,7 +1,7 @@
 ---
 title: "OmniGoal Tracker"
 slug: "omnigoal-tracker"
-description: "Personal goal-tracking dashboard — fitness, learning, projects, and code practice in one app, with an AI coach that briefs from real data."
+description: "Personal goal-tracking dashboard that pulls fitness, learning, projects, and code practice into one place, with an AI coach that actually reads your data."
 date: "2026-05-07"
 status: "active"
 type: "project"
@@ -14,16 +14,16 @@ order: 4
 
 ![OmniGoal Tracker dashboard](/images/omnigoal-tracker.png)
 
-Every January the same goals — get healthier, ship more, level up technically — scattered across half a dozen apps, spreadsheets, and notebooks until the friction killed momentum by February. OmniGoal Tracker is the single dashboard built to stop renting that problem.
+Every January I'd set the same goals: get healthier, ship more, level up technically. And every year they'd end up scattered across five different apps and a spreadsheet I stopped opening by February. OmniGoal Tracker is one dashboard that keeps all of it in one place.
 
 ## What it does
 
-Ten tabs in one app: a dashboard with an AI-generated daily briefing, learning-stack tracking, a Fitbit-fed body tracker with rolling averages and trend stats, a workout log built around progressive overload, AI-generated SQL and coding challenges scaled to skill level, a quarterly project roadmap, an RSS news aggregator, anomaly alerts on health and progress data, and a live OpenAI cost tracker.
+Ten tabs covering everything I actually wanted to track: a dashboard with an AI daily briefing, learning progress, a Fitbit-connected body tracker with rolling averages and trends, a workout log built around progressive overload, AI-generated SQL and coding challenges that scale to your level, a quarterly project roadmap, an RSS news feed, anomaly alerts on health and progress data, and a live OpenAI cost tracker so I know what the AI features are costing me.
 
-The AI coach runs on OpenAI `gpt-5-mini` and reads across every tracker — its daily briefings and weekly reports are grounded in the actual data, not generic advice.
+The AI coach runs on OpenAI and reads across every tracker. Its daily briefings and weekly reports come from your actual data, not generic motivation.
 
 ## Key decisions
 
-Cloud sync runs through Supabase Postgres, with a localStorage fallback when no Supabase keys are configured. Fitbit health data syncs on its own through a scheduled GitHub Action that refreshes its OAuth tokens automatically — no manual intervention. The news module is kept decoupled from the React core as a separate Python and Streamlit app.
+Cloud sync runs through Supabase Postgres, with a localStorage fallback when no Supabase keys are configured. Fitbit data syncs automatically through a scheduled GitHub Action that handles its own OAuth token refresh. The news module is a separate Python/Streamlit app, kept decoupled from the React core on purpose.
 
-It is a personal tool, and the repo says so plainly: the OpenAI key is currently bundled into the client, it is single-user by design, and cloud sync uploads the full app state on every change. Shipped honest, not shipped polished — open-sourced under MIT as a starting point.
+This is a personal tool and the repo is honest about that. The OpenAI key is bundled into the client, it's single-user by design, and cloud sync uploads the full app state on every change. It's open-sourced under MIT as a starting point, not a finished product.
